@@ -7,41 +7,6 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Foregrou.001
-    second: {fileID: 2100000, guid: 799070e68e8b7364089bceac0c7efc89, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Metal Paint
-    second: {fileID: 2100000, guid: 59e12bb0bf0242b4ebf3440adbbe395b, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Samsun01.001
-    second: {fileID: 2100000, guid: 580bcf9fc3980514383e53f64d01f92b, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Samsun03.001
-    second: {fileID: 2100000, guid: 2e6fd3eb2f3a5494ab0b4dae949c3c06, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Samsun04.001
-    second: {fileID: 2100000, guid: 0bcb0a509ff8ac349a274f435332da54, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Samsung_.001
-    second: {fileID: 2100000, guid: 6ecbd94dc85aaba4d9553a389580d634, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: metal
-    second: {fileID: 2100000, guid: dbf4dea95a74c0f409010b4e4233ed8c, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
       name: openPBR_shader1
     second: {fileID: 2100000, guid: 045b44328c0ecce4f8a0af221206cd32, type: 2}
   materials:
