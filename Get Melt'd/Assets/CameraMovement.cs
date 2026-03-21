@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class CameraMovement : MonoBehaviour
 {
+    [SerializeField] GameStateManager gameStateManager;
+
     [Header("Target Settings")]
     public Transform target;
     public Vector3 offset = new Vector3(0, 1.2f, 0);
@@ -36,6 +38,11 @@ public class CameraMovement : MonoBehaviour
 
     void Update()
     {
+        if (gameStateManager != null && gameStateManager.CurrentGameState == GameStates.PausedGame)
+        {
+            return;
+        }
+            
         if (!target) return;
 
         currentX += Input.GetAxis("Mouse X") * mouseSensitivity;
