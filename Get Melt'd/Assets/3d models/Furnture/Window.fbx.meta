@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: b24635e099331c645ac9dab1dd3aab61
+guid: 9b2d12667430afb45b51ddf9cf49f928
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -7,8 +7,13 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: blinn4
-    second: {fileID: 2100000, guid: 02c98b7f20a1bb64894955569dcef734, type: 2}
+      name: lambert4
+    second: {fileID: 2100000, guid: 0ad3e7f96789bd146a0f7f20a13faec5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: phongE2
+    second: {fileID: 2100000, guid: eeebc25e04f51c640a581edb4121cca1, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

@@ -10,7 +10,7 @@ public class CameraMovement : MonoBehaviour
 
     [Header("Distance Settings")]
     public float defaultDistance = 5.0f;
-    public float minDistance = 1.5f;
+    public float minDistance = 0.5f; // Lowered slightly for tight spaces
     public float maxDistance = 8.0f;
     public float zoomSpeed = 4.0f;
 
@@ -21,7 +21,8 @@ public class CameraMovement : MonoBehaviour
 
     [Header("Collision Settings")]
     public LayerMask collisionMask;
-    public float collisionPadding = 0.3f;
+    public float collisionPadding = 0.2f;
+    public float cameraSphereRadius = 0.2f; // Added radius to prevent clipping
 
     private float currentX = 0f;
     private float currentY = 20f;
@@ -32,6 +33,8 @@ public class CameraMovement : MonoBehaviour
     {
         desiredDistance = defaultDistance;
         currentDistance = defaultDistance;
+
+        // Ensure cursor is handled
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
@@ -42,9 +45,10 @@ public class CameraMovement : MonoBehaviour
         {
             return;
         }
-            
+
         if (!target) return;
 
+        // Input Handling
         currentX += Input.GetAxis("Mouse X") * mouseSensitivity;
         currentY -= Input.GetAxis("Mouse Y") * mouseSensitivity;
         currentY = Mathf.Clamp(currentY, minVerticalAngle, maxVerticalAngle);
@@ -57,21 +61,26 @@ public class CameraMovement : MonoBehaviour
     {
         if (!target) return;
 
+        // Calculate Rotation and Base Position
         Quaternion rotation = Quaternion.Euler(currentY, currentX, 0);
-        Vector3 targetPosition = target.position + offset;
+        Vector3 targetPosition = target.position + (rotation * offset); // Offset now rotates with camera
         Vector3 direction = rotation * Vector3.back;
 
-        // Collision Check
+        // Robust Collision Check using SphereCast
+        // This treats the camera like a physical ball so it can't poke through walls
         RaycastHit hit;
-        if (Physics.Raycast(targetPosition, direction, out hit, desiredDistance, collisionMask))
+        if (Physics.SphereCast(targetPosition, cameraSphereRadius, direction, out hit, desiredDistance, collisionMask))
         {
+            // If we hit something, snap the distance to the hit point minus padding
             currentDistance = Mathf.Clamp(hit.distance - collisionPadding, minDistance, desiredDistance);
         }
         else
         {
-            currentDistance = Mathf.Lerp(currentDistance, desiredDistance, Time.deltaTime * 5f);
+            // Smoothly zoom back out when no longer colliding
+            currentDistance = Mathf.Lerp(currentDistance, desiredDistance, Time.deltaTime * 10f);
         }
 
+        // Apply Position and Rotation
         transform.position = targetPosition + direction * currentDistance;
         transform.LookAt(targetPosition);
     }

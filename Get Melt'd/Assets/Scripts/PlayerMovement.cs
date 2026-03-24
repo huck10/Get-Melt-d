@@ -38,7 +38,9 @@ public class PlayerMovement : MonoBehaviour
 
         if (body != null)
         {
-            body.freezeRotation = true;
+            // REMOVED: body.freezeRotation = true; 
+            // We allow physics to rotate the body naturally now.
+
             body.useGravity = true;
             body.mass = maxMass;
             body.interpolation = RigidbodyInterpolation.Interpolate;
@@ -92,9 +94,16 @@ public class PlayerMovement : MonoBehaviour
 
         if (movementDirection.magnitude >= 0.1f)
         {
+            // Apply movement velocity
             body.velocity = new Vector3(movementDirection.x * speed, body.velocity.y, movementDirection.z * speed);
+
+            // OPTIONAL: If you want the character to turn smoothly but NOT freeze, 
+            // you can keep this. If you want TOTAL freedom (like a rolling ball), 
+            // leave the rotation lines below commented out.
+            /*
             Quaternion targetRotation = Quaternion.LookRotation(movementDirection);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
+            */
         }
         else
         {
