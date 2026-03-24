@@ -62,7 +62,9 @@ public class PlayerMovement : MonoBehaviour
         {
             body.velocity = new Vector3(body.velocity.x, 0, body.velocity.z);
             body.AddForce(Vector3.up * currentJumpForce, ForceMode.Impulse);
+            isGrounded = false;
         }
+
     }
 
     void UpdatePhysicsStats()

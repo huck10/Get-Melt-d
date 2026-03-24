@@ -855,6 +855,10 @@ PrefabInstance:
       propertyPath: minJumpForce
       value: 18
       objectReference: {fileID: 0}
+    - target: {fileID: 3915669679136933117, guid: 3e5f5ad2dfa64544889bc3b6cfc59173, type: 3}
+      propertyPath: groundMask.m_Bits
+      value: 65
+      objectReference: {fileID: 0}
     - target: {fileID: 5313183978858391816, guid: 3e5f5ad2dfa64544889bc3b6cfc59173, type: 3}
       propertyPath: m_Name
       value: Player
@@ -2959,7 +2963,7 @@ GameObject:
   - component: {fileID: 787895250}
   - component: {fileID: 787895249}
   - component: {fileID: 787895252}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -11023,7 +11027,7 @@ GameObject:
   - component: {fileID: 1100435814288942843}
   - component: {fileID: 2927761708713742897}
   - component: {fileID: 4101181806349412703}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: IceCube 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
