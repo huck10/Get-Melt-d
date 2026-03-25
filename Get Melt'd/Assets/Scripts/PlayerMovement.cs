@@ -118,7 +118,13 @@ public class PlayerMovement : MonoBehaviour
         {
             Quaternion slopeRotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
 
-            Instantiate(skidPrefab, hit.point + hit.normal * 0.01f, slopeRotation);
+            Vector3 offset = hit.normal * Random.Range(0.01f, 0.02f);
+            GameObject skid = Instantiate(skidPrefab, hit.point + offset, slopeRotation);
+
+            float playerWidthX = transform.localScale.x;
+            float playerWidthZ = transform.localScale.z;
+
+            skid.transform.localScale = new Vector3(playerWidthX, 1f, playerWidthZ);
         }
     }
 }

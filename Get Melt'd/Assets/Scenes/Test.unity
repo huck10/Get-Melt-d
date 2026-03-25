@@ -172,7 +172,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   visualModel: {fileID: 1980105727}
   waterParticle: {fileID: 5513882886850485801, guid: 42ec2a25b33c48243b9d41a286247bf5, type: 3}
-  skidPrefab: {fileID: 4511540087389813273, guid: d818cdf919f034941857da42e6c7f431, type: 3}
+  skidPrefab: {fileID: 619838003463243098, guid: cb04b0a909686cc4eb7190bb19549982, type: 3}
   spawnDistance: 0.5
   groundMask:
     serializedVersion: 2
@@ -348,7 +348,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6099739267155240586, guid: 3e5f5ad2dfa64544889bc3b6cfc59173, type: 3}
       propertyPath: interval
-      value: 5
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5402540787185741247, guid: 3e5f5ad2dfa64544889bc3b6cfc59173, type: 3}
@@ -654,6 +654,63 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7056163462007477922, guid: 3e5f5ad2dfa64544889bc3b6cfc59173, type: 3}
   m_PrefabInstance: {fileID: 1275212931}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &7342013026226583777
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 275225137132249056, guid: cb04b0a909686cc4eb7190bb19549982, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.95935225
+      objectReference: {fileID: 0}
+    - target: {fileID: 275225137132249056, guid: cb04b0a909686cc4eb7190bb19549982, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.20772433
+      objectReference: {fileID: 0}
+    - target: {fileID: 275225137132249056, guid: cb04b0a909686cc4eb7190bb19549982, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.5590748
+      objectReference: {fileID: 0}
+    - target: {fileID: 275225137132249056, guid: cb04b0a909686cc4eb7190bb19549982, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 275225137132249056, guid: cb04b0a909686cc4eb7190bb19549982, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 275225137132249056, guid: cb04b0a909686cc4eb7190bb19549982, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 275225137132249056, guid: cb04b0a909686cc4eb7190bb19549982, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 275225137132249056, guid: cb04b0a909686cc4eb7190bb19549982, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 275225137132249056, guid: cb04b0a909686cc4eb7190bb19549982, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 275225137132249056, guid: cb04b0a909686cc4eb7190bb19549982, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 619838003463243098, guid: cb04b0a909686cc4eb7190bb19549982, type: 3}
+      propertyPath: m_Name
+      value: WetTrail2
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: cb04b0a909686cc4eb7190bb19549982, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -663,3 +720,4 @@ SceneRoots:
   - {fileID: 794690858}
   - {fileID: 1669949912}
   - {fileID: 1275212931}
+  - {fileID: 7342013026226583777}

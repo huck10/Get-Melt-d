@@ -96,7 +96,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: 43136d44dd51ee641a034edce9a77c85, type: 2}
   m_LightingSettings: {fileID: 0}
 --- !u!196 &4
 NavMeshSettings:
@@ -4759,15 +4759,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2154703845184540884, guid: 3e5f5ad2dfa64544889bc3b6cfc59173, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 76.7
+      value: 48.4
       objectReference: {fileID: 0}
     - target: {fileID: 2154703845184540884, guid: 3e5f5ad2dfa64544889bc3b6cfc59173, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.3
+      value: 48
       objectReference: {fileID: 0}
     - target: {fileID: 2154703845184540884, guid: 3e5f5ad2dfa64544889bc3b6cfc59173, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 220.4
+      value: 165.3
       objectReference: {fileID: 0}
     - target: {fileID: 2154703845184540884, guid: 3e5f5ad2dfa64544889bc3b6cfc59173, type: 3}
       propertyPath: m_LocalRotation.w
@@ -6719,7 +6719,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   visualModel: {fileID: 1671223150}
   waterParticle: {fileID: 5513882886850485801, guid: 42ec2a25b33c48243b9d41a286247bf5, type: 3}
-  skidPrefab: {fileID: 4511540087389813273, guid: d818cdf919f034941857da42e6c7f431, type: 3}
+  skidPrefab: {fileID: 619838003463243098, guid: cb04b0a909686cc4eb7190bb19549982, type: 3}
   spawnDistance: 0.5
   groundMask:
     serializedVersion: 2
