@@ -77,9 +77,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawnPoint: {fileID: 0}
   meltedTextContainer: {fileID: 0}
+  hpTempText: {fileID: 0}
   shrinkAmount: 0.1
   interval: 1
-  intervalWhenTouchHot: 0.5
   showMeltedTextTime: 3
 --- !u!114 &7161390588180929506
 MonoBehaviour:
@@ -99,10 +99,10 @@ MonoBehaviour:
   spawnDistance: 0.5
   groundMask:
     serializedVersion: 2
-    m_Bits: 119
+    m_Bits: 503
   slopeMask:
     serializedVersion: 2
-    m_Bits: 119
+    m_Bits: 503
   groundCheck: {fileID: 718677705087466788}
   skidScaleOffset: 0.2
   groundDistance: 0.2
