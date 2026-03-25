@@ -12,6 +12,7 @@ public class PlayerMovement : MonoBehaviour
     public LayerMask groundMask;
     public LayerMask slopeMask;
     public Transform groundCheck;
+    public float skidScaleOffset = 0.2f;
 
     public float groundDistance = 0.2f;
     public float speed = 6.0f;
@@ -121,8 +122,8 @@ public class PlayerMovement : MonoBehaviour
             Vector3 offset = hit.normal * Random.Range(0.01f, 0.02f);
             GameObject skid = Instantiate(skidPrefab, hit.point + offset, slopeRotation);
 
-            float playerWidthX = transform.localScale.x;
-            float playerWidthZ = transform.localScale.z;
+            float playerWidthX = transform.localScale.x - skidScaleOffset;
+            float playerWidthZ = transform.localScale.z - skidScaleOffset;
 
             skid.transform.localScale = new Vector3(playerWidthX, 1f, playerWidthZ);
         }

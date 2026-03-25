@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2154703845184540884}
   - component: {fileID: 51153838207937490}
-  - component: {fileID: 5402540787185741247}
   - component: {fileID: 6099739267155240586}
+  - component: {fileID: 7161390588180929506}
   m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
@@ -63,30 +63,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 1
---- !u!114 &5402540787185741247
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5313183978858391816}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 53976b733fc19e942bfcaa3aedc854d6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  visualModel: {fileID: 7056163462007477922}
-  waterParticle: {fileID: 5513882886850485801, guid: 42ec2a25b33c48243b9d41a286247bf5, type: 3}
-  groundMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  slopeMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  groundCheck: {fileID: 718677705087466788}
-  groundDistance: 0.2
-  speed: 6
-  jumpForce: 20
 --- !u!114 &6099739267155240586
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -99,9 +75,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6008747f3e4777c48b002bed605703d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spawnPoint: {fileID: 0}
+  meltedTextContainer: {fileID: 0}
   shrinkAmount: 0.1
   interval: 1
   intervalWhenTouchHot: 0.5
+  showMeltedTextTime: 3
+--- !u!114 &7161390588180929506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5313183978858391816}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04c604c7a5c6120408fee735f5d778ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  visualModel: {fileID: 7056163462007477922}
+  waterParticle: {fileID: 5513882886850485801, guid: 42ec2a25b33c48243b9d41a286247bf5, type: 3}
+  skidPrefab: {fileID: 619838003463243098, guid: cb04b0a909686cc4eb7190bb19549982, type: 3}
+  spawnDistance: 0.5
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 119
+  slopeMask:
+    serializedVersion: 2
+    m_Bits: 119
+  groundCheck: {fileID: 718677705087466788}
+  skidScaleOffset: 0.2
+  groundDistance: 0.2
+  speed: 15
+  jumpForce: 20
 --- !u!1 &8619823434247870414
 GameObject:
   m_ObjectHideFlags: 0
