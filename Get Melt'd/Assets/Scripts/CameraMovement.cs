@@ -21,7 +21,7 @@ public class CameraMovement : MonoBehaviour
     public float maxVerticalAngle = 70f;
 
     [Header("Camera Snap Settings")]
-    public float snapSpeed = 10f;  // how fast it snaps behind character
+    public float snapSpeed = 8f;
 
     [Header("Collision Settings")]
     public LayerMask collisionMask;
@@ -33,6 +33,8 @@ public class CameraMovement : MonoBehaviour
     private float currentDistance;
     private float desiredDistance;
     private bool isSnapping = false;
+    private float snapTargetX = 0f;
+    private float snapTargetY = 15f;
 
     void Start()
     {
@@ -49,52 +51,54 @@ public class CameraMovement : MonoBehaviour
 
         if (!target) return;
 
-        // Mouse look
-        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
-        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
-
-        // Right stick look (Xbox + PS)
+        // Right stick input
         float stickX = Input.GetAxis("RightStickX") * controllerSensitivity * Time.deltaTime * 60f;
         float stickY = Input.GetAxis("RightStickY") * controllerSensitivity * Time.deltaTime * 60f;
 
-        // If player moves the right stick, cancel any ongoing snap
+        // Mouse input
+        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
+        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
+
+        // RS click (joystick button 9) — snap camera behind character like AAA games
+        if (Input.GetKeyDown(KeyCode.Joystick1Button9))
+        {
+            isSnapping = true;
+            // Target is directly behind character at a comfortable angle
+            snapTargetX = target.eulerAngles.y;
+            snapTargetY = 15f;
+        }
+
+        // Cancel snap if player manually moves right stick
         if (Mathf.Abs(stickX) > 0.1f || Mathf.Abs(stickY) > 0.1f)
             isSnapping = false;
 
-        // RS click (joystick button 8) — snap camera behind character
-        if (Input.GetKeyDown(KeyCode.Joystick1Button8))
-            isSnapping = true;
-
         if (isSnapping)
         {
-            // Smoothly rotate currentX toward character's facing direction
-            float targetX = target.eulerAngles.y;
-            float targetY = 20f; // reset to default vertical angle
-            currentX = Mathf.LerpAngle(currentX, targetX, snapSpeed * Time.deltaTime);
-            currentY = Mathf.Lerp(currentY, targetY, snapSpeed * Time.deltaTime);
+            // Smoothly swing camera behind character (AAA style)
+            currentX = Mathf.LerpAngle(currentX, snapTargetX, snapSpeed * Time.deltaTime);
+            currentY = Mathf.Lerp(currentY, snapTargetY, snapSpeed * Time.deltaTime);
 
             // Stop snapping once close enough
-            if (Mathf.Abs(Mathf.DeltaAngle(currentX, targetX)) < 0.5f && Mathf.Abs(currentY - targetY) < 0.5f)
+            if (Mathf.Abs(Mathf.DeltaAngle(currentX, snapTargetX)) < 0.5f &&
+                Mathf.Abs(currentY - snapTargetY) < 0.5f)
             {
-                currentX = targetX;
-                currentY = targetY;
+                currentX = snapTargetX;
+                currentY = snapTargetY;
                 isSnapping = false;
             }
         }
         else
         {
+            // Normal look
             currentX += mouseX + stickX;
             currentY -= mouseY + stickY;
             currentY = Mathf.Clamp(currentY, minVerticalAngle, maxVerticalAngle);
         }
 
-        // Mouse scroll zoom
+        // Zoom
         float scrollZoom = Input.GetAxis("Mouse ScrollWheel") * zoomSpeed;
-
-        // RT/LT (Xbox) R2/L2 (PS) trigger zoom
         float triggerZoom = (Input.GetAxis("ZoomIn") - Input.GetAxis("ZoomOut")) * (zoomSpeed * 0.05f);
 
-        // RB/LB (Xbox) R1/L1 (PS) bumper zoom — stepped
         if (Input.GetButtonDown("ZoomInBumper")) desiredDistance -= 0.5f;
         if (Input.GetButtonDown("ZoomOutBumper")) desiredDistance += 0.5f;
 

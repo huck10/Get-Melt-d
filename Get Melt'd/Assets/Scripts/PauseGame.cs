@@ -7,14 +7,17 @@ public class PauseGame : MonoBehaviour
     private void Start()
     {
         if (gameStateManager == null)
-            Debug.Log("No GameStateManager!");
+            Debug.LogError("PauseGame: GameStateManager is not assigned in Inspector!");
     }
 
     private void Update()
     {
-        // joystick button 7 = Start/Menu (Xbox) / Options (PS)
-        if (Input.GetKeyDown(KeyCode.Joystick1Button7))
+        bool pausePressed = Input.GetKeyDown(KeyCode.Escape)
+                         || Input.GetKeyDown(KeyCode.Joystick1Button7);
+
+        if (pausePressed)
         {
+            Debug.Log("Pause button pressed!");
             if (gameStateManager == null) return;
             gameStateManager.TogglePause();
         }
