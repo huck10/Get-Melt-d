@@ -2,9 +2,11 @@ using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
 {
-    [Header("Health Settings")]
+    [Header("Health & Melting Settings")]
     public float maxHealth = 100f;
     public float currentHealth;
+    [Tooltip("How much health/size is lost per second.")]
+    public float meltRate = 2f;
 
     [Header("Size Settings")]
     public float minScale = 0.3f;
@@ -23,6 +25,16 @@ public class PlayerHealth : MonoBehaviour
         fallbackRespawnPoint = transform.position;
     }
 
+    void Update()
+    {
+        // Continuous melting logic
+        if (currentHealth > 0)
+        {
+            // Use TakeDamage so all the size and death logic stays centralized
+            TakeDamage(meltRate * Time.deltaTime);
+        }
+    }
+
     public void TakeDamage(float amount)
     {
         currentHealth -= amount;
@@ -38,6 +50,7 @@ public class PlayerHealth : MonoBehaviour
 
     void UpdatePlayerSize()
     {
+        // Calculate percentage and apply to scale
         float healthPercent = currentHealth / maxHealth;
         float currentScaleMultiplier = Mathf.Lerp(minScale, 1f, healthPercent);
         transform.localScale = initialScale * currentScaleMultiplier;
@@ -46,7 +59,7 @@ public class PlayerHealth : MonoBehaviour
     public void Respawn()
     {
         currentHealth = maxHealth;
-        transform.localScale = initialScale;
+        UpdatePlayerSize(); // Reset scale immediately on respawn
 
         // Stop all momentum so you don't keep falling/moving after respawning
         if (rb != null)
@@ -64,11 +77,19 @@ public class PlayerHealth : MonoBehaviour
             transform.position = fallbackRespawnPoint;
         }
 
-        Debug.Log("Player Respawned!");
+        Debug.Log("The ice has melted! Respawning...");
     }
 
     public void SetNewRespawnAnchor(Transform newAnchor)
     {
         respawnAnchor = newAnchor;
+    }
+
+    // Optional: Call this to heal/refreeze the player (e.g., standing in a freezer)
+    public void Refreeze(float amount)
+    {
+        currentHealth += amount;
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+        UpdatePlayerSize();
     }
 }

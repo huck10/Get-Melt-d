@@ -4,115 +4,128 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    [SerializeField] Transform visualModel;
+    [SerializeField] ParticleSystem waterParticle;
+    [SerializeField] GameObject skidPrefab;
+
+    public float spawnDistance = 0.5f;
     public LayerMask groundMask;
+    public LayerMask slopeMask;
     public Transform groundCheck;
-    public float groundDistance = 0.5f;
+    public float skidScaleOffset = 0.2f;
+
+    public float groundDistance = 0.2f;
     public float speed = 6.0f;
-    public float rotationSpeed = 10.0f;
-
-    [Header("Jump Settings")]
-    public float maxJumpForce = 12.0f;
-    public float minJumpForce = 8.0f;
-    private float currentJumpForce;
-
-    [Header("Physics & Falling")]
-    public float fallMultiplier = 2.5f;
-    public float lowJumpMultiplier = 2f;
-
-    [Header("Weight Settings")]
-    public float maxMass = 1.0f;
-    public float minMass = 0.2f;
+    public float jumpForce = 5.0f;
 
     private Rigidbody body;
-    private bool isGrounded;
-    private PlayerHealth healthScript;
-    private Transform mainCameraTransform;
+    private float smooth = 10f;
+    private float slopeDetectionDistance = 2.0f;
+    private bool wasAirborne = true;
+
+    private Vector3 lastSpawnPos;
 
     void Start()
     {
         body = GetComponent<Rigidbody>();
-        healthScript = GetComponent<PlayerHealth>();
-
-        if (Camera.main != null)
-            mainCameraTransform = Camera.main.transform;
 
         if (body != null)
         {
             body.freezeRotation = true;
-            body.useGravity = true;
-            body.mass = maxMass;
-            body.interpolation = RigidbodyInterpolation.Interpolate;
-            body.collisionDetectionMode = CollisionDetectionMode.Continuous;
         }
     }
 
     void Update()
     {
-        if (groundCheck != null)
+        //Ground detector
+        bool isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+
+        // Spawn particle ONLY when landing
+        if (wasAirborne && isGrounded)
         {
-            isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
-            Debug.DrawRay(groundCheck.position, Vector3.down * groundDistance, isGrounded ? Color.green : Color.red);
+            Instantiate(waterParticle, transform.position + Vector3.down * 0.5f, Quaternion.identity);
         }
+        wasAirborne = !isGrounded;
 
-        UpdatePhysicsStats();
-
+        //Jump
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
-            body.velocity = new Vector3(body.velocity.x, 0, body.velocity.z);
-            body.AddForce(Vector3.up * currentJumpForce, ForceMode.Impulse);
+            body.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
-    }
 
-    void UpdatePhysicsStats()
-    {
-        if (healthScript != null && body != null && healthScript.maxHealth > 0)
+        if (body.velocity.magnitude > 0.5f)
         {
-            float healthPercent = Mathf.Clamp01(healthScript.currentHealth / healthScript.maxHealth);
-            body.mass = Mathf.Lerp(minMass, maxMass, healthPercent);
-            currentJumpForce = Mathf.Lerp(maxJumpForce, minJumpForce, healthPercent);
+            if (Vector3.Distance(transform.position, lastSpawnPos) > spawnDistance)
+            {
+                SpawnSkid();
+                lastSpawnPos = transform.position;
+            }
         }
     }
 
     void FixedUpdate()
     {
-        float moveX = Input.GetAxisRaw("Horizontal");
-        float moveZ = Input.GetAxisRaw("Vertical");
-
-        if (mainCameraTransform == null) return;
-
-        // Camera-relative direction logic
-        Vector3 camForward = mainCameraTransform.forward;
-        Vector3 camRight = mainCameraTransform.right;
-        camForward.y = 0;
-        camRight.y = 0;
-        camForward.Normalize();
-        camRight.Normalize();
-
-        Vector3 movementDirection = (camForward * moveZ + camRight * moveX).normalized;
-
-        if (movementDirection.magnitude >= 0.1f)
-        {
-            body.velocity = new Vector3(movementDirection.x * speed, body.velocity.y, movementDirection.z * speed);
-            Quaternion targetRotation = Quaternion.LookRotation(movementDirection);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
-        }
-        else
-        {
-            body.velocity = new Vector3(0, body.velocity.y, 0);
-        }
-
-        ApplyCustomGravity();
+        //Movement
+        MoveRelativeToCamera();
+        DetectSlope();
     }
 
-    void ApplyCustomGravity()
+    void DetectSlope()
     {
-        if (body.velocity.y < 0)
+        RaycastHit hit;
+
+        if (Physics.Raycast(transform.position, Vector3.down, out hit, slopeDetectionDistance, slopeMask))
         {
-            body.velocity += Vector3.up * Physics.gravity.y * (fallMultiplier - 1) * Time.fixedDeltaTime;
+            Quaternion slopeRotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
+
+            Quaternion finalRotation = slopeRotation * Quaternion.Euler(0, transform.eulerAngles.y, 0);
+
+            visualModel.rotation = Quaternion.Slerp(visualModel.rotation, finalRotation, smooth * Time.deltaTime);
         }
-        else if (body.velocity.y > 0 && !Input.GetButton("Jump"))
+    }
+
+    void MoveRelativeToCamera()
+    {
+        float moveX = Input.GetAxis("Horizontal");
+        float moveZ = Input.GetAxis("Vertical");
+
+        Transform cam = Camera.main.transform;
+
+        Vector3 forward = cam.forward;
+        Vector3 right = cam.right;
+
+        forward.y = 0;
+        right.y = 0;
+
+        forward.Normalize();
+        right.Normalize();
+
+        Vector3 moveDir = forward * moveZ + right * moveX;
+
+        body.velocity = moveDir * speed + Vector3.up * body.velocity.y;
+
+        if (moveDir.magnitude > 0.1f)
         {
-            body.velocity += Vector3.up * Physics.gravity.y * (lowJumpMultiplier - 1) * Time.fixedDeltaTime;
+            float y = Mathf.Atan2(moveDir.x, moveDir.z) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(0, y, 0);
+        }
+    }
+
+    void SpawnSkid()
+    {
+        RaycastHit hit;
+
+        if (Physics.Raycast(transform.position, Vector3.down, out hit, 2f, groundMask))
+        {
+            Quaternion slopeRotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
+
+            Vector3 offset = hit.normal * Random.Range(0.01f, 0.02f);
+            GameObject skid = Instantiate(skidPrefab, hit.point + offset, slopeRotation);
+
+            float playerWidthX = transform.localScale.x - skidScaleOffset;
+            float playerWidthZ = transform.localScale.z - skidScaleOffset;
+
+            skid.transform.localScale = new Vector3(playerWidthX, 1f, playerWidthZ);
         }
     }
 }
