@@ -5,14 +5,12 @@ using UnityEngine;
 public class GameStateManager : MonoBehaviour
 {
     [SerializeField] GameObject pauseMenuContainer;
-
     public GameStates CurrentGameState => currentGameState;
-    public GameStateTimeScale[] gameStateTimeScale; 
-
-    private GameStates currentGameState; 
+    public GameStateTimeScale[] gameStateTimeScale;
+    private GameStates currentGameState;
     private float currentTimeScale;
 
-    public void PausedGame() { ChangeGameState(GameStates.PausedGame); } //call this in buttons
+    public void PausedGame() { ChangeGameState(GameStates.PausedGame); }
     public void InGame() { ChangeGameState(GameStates.InGame); }
     public void LevelUp() { ChangeGameState(GameStates.LevelUp); }
     public void EndGame() { ChangeGameState(GameStates.EndGame); }
@@ -23,36 +21,29 @@ public class GameStateManager : MonoBehaviour
         ChangeGameState(GameStateHolder.NextState);
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            TogglePause();
-        }
-    }
+    // REMOVED Update() — Escape and controller pause
+    // are now handled exclusively in PauseGame.cs
 
-    private void ChangeGameState(GameStates newState) //change state and timescale automatically
+    private void ChangeGameState(GameStates newState)
     {
-        foreach(var item in gameStateTimeScale)
+        foreach (var item in gameStateTimeScale)
         {
-            if(item.gameState == newState)
+            if (item.gameState == newState)
             {
                 currentGameState = newState;
                 Time.timeScale = item.timeScale;
                 currentTimeScale = item.timeScale;
-
                 Debug.LogWarning("GameState: " + currentGameState + " TimeScale: " + currentTimeScale);
                 return;
             }
         }
-
         Debug.LogWarning("GameState not found!");
         Time.timeScale = 1f;
     }
 
     public void TogglePause()
     {
-        if(pauseMenuContainer == null)
+        if (pauseMenuContainer == null)
         {
             Debug.Log("Pause menu container not found!");
             return;
@@ -73,7 +64,4 @@ public class GameStateManager : MonoBehaviour
             pauseMenuContainer.SetActive(false);
         }
     }
-
 }
-
-

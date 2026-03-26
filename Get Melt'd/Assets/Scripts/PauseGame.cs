@@ -1,24 +1,25 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PauseGame : MonoBehaviour
 {
     [SerializeField] GameStateManager gameStateManager;
-    [SerializeField] 
 
     private void Start()
     {
-        if(gameStateManager == null)
-        {
-            Debug.Log("No GameStateManager!");
-        }
+        if (gameStateManager == null)
+            Debug.LogError("PauseGame: GameStateManager is not assigned in Inspector!");
     }
+
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        bool pausePressed = Input.GetKeyDown(KeyCode.Escape)
+                         || Input.GetKeyDown(KeyCode.Joystick1Button7);
+
+        if (pausePressed)
         {
-           
+            Debug.Log("Pause button pressed!");
+            if (gameStateManager == null) return;
+            gameStateManager.TogglePause();
         }
     }
 }
