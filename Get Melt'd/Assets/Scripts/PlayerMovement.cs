@@ -11,6 +11,7 @@ public class PlayerMovement : MonoBehaviour
     public float spawnDistance = 0.5f;
     public LayerMask groundMask;
     public LayerMask slopeMask;
+    public LayerMask skidMask;
     public Transform groundCheck;
     public float skidScaleOffset = 0.2f;
 
@@ -115,7 +116,7 @@ public class PlayerMovement : MonoBehaviour
     {
         RaycastHit hit;
 
-        if (Physics.Raycast(transform.position, Vector3.down, out hit, 2f, groundMask))
+        if (Physics.Raycast(transform.position, Vector3.down, out hit, 2f, skidMask))
         {
             Quaternion slopeRotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
 

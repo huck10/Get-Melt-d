@@ -79,7 +79,7 @@ MonoBehaviour:
   meltedTextContainer: {fileID: 0}
   hpTempText: {fileID: 0}
   shrinkAmount: 0.1
-  interval: 1
+  interval: 2.5
   showMeltedTextTime: 3
 --- !u!114 &7161390588180929506
 MonoBehaviour:
@@ -103,6 +103,9 @@ MonoBehaviour:
   slopeMask:
     serializedVersion: 2
     m_Bits: 503
+  skidMask:
+    serializedVersion: 2
+    m_Bits: 511
   groundCheck: {fileID: 718677705087466788}
   skidScaleOffset: 0.2
   groundDistance: 0.2
