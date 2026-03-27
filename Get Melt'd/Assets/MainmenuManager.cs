@@ -5,9 +5,12 @@ public class MainmenuManager : MonoBehaviour
 {
     private void Awake()
     {
-        // This is the "Magic Fix"
-        // It unfreezes the game clock so buttons can process clicks again
         Time.timeScale = 1f;
+    }
+
+    public void PlayGame()
+    {
+        SceneManager.LoadScene("Cutscene"); 
     }
 
     public void LoadSceneByName(string sceneName)
