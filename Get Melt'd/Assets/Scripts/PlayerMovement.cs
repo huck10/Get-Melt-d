@@ -7,14 +7,20 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] Transform visualModel;
     [SerializeField] ParticleSystem waterParticle;
     [SerializeField] GameObject skidPrefab;
-    public float spawnDistance = 0.5f;
+
+    [Header("Ground Detection")]
     public LayerMask groundMask;
     public LayerMask slopeMask;
     public Transform groundCheck;
-    public float skidScaleOffset = 0.2f;
+    public Vector3 boxSize = new Vector3(0.5f, 0.1f, 0.5f); // Adjust this to match your player width
     public float groundDistance = 0.2f;
+
+    [Header("Movement Settings")]
+    public float skidScaleOffset = 0.2f;
+    public float spawnDistance = 0.5f;
     public float speed = 6.0f;
     public float jumpForce = 5.0f;
+
     private Rigidbody body;
     private float smooth = 10f;
     private float slopeDetectionDistance = 2.0f;
@@ -30,18 +36,18 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        bool isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+        // CHANGED: Using CheckBox instead of CheckSphere for wider detection
+        bool isGrounded = Physics.CheckBox(groundCheck.position, boxSize / 2, groundCheck.rotation, groundMask);
 
         if (wasAirborne && isGrounded)
             Instantiate(waterParticle, transform.position + Vector3.down * 0.5f, Quaternion.identity);
 
         wasAirborne = !isGrounded;
 
-        // Keyboard Space + Xbox A + PS Cross
         if (Input.GetButtonDown("Jump") && isGrounded)
             body.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
 
-        if (body.velocity.magnitude > 0.5f)
+        if (body.velocity.magnitude > 0.5f && isGrounded)
         {
             if (Vector3.Distance(transform.position, lastSpawnPos) > spawnDistance)
             {
@@ -57,9 +63,21 @@ public class PlayerMovement : MonoBehaviour
         DetectSlope();
     }
 
+    // Helps you see the ground checker in the Editor
+    void OnDrawGizmosSelected()
+    {
+        if (groundCheck != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.matrix = groundCheck.localToWorldMatrix;
+            Gizmos.DrawWireCube(Vector3.zero, boxSize);
+        }
+    }
+
     void DetectSlope()
     {
         RaycastHit hit;
+        // Optimization: You could also use a SphereCast here if slopes are buggy
         if (Physics.Raycast(transform.position, Vector3.down, out hit, slopeDetectionDistance, slopeMask))
         {
             Quaternion slopeRotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
@@ -70,7 +88,6 @@ public class PlayerMovement : MonoBehaviour
 
     void MoveRelativeToCamera()
     {
-        // "Horizontal" / "Vertical" already cover left stick by default in Unity
         float moveX = Input.GetAxis("Horizontal");
         float moveZ = Input.GetAxis("Vertical");
 
@@ -100,6 +117,7 @@ public class PlayerMovement : MonoBehaviour
             Quaternion slopeRotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
             Vector3 offset = hit.normal * Random.Range(0.01f, 0.02f);
             GameObject skid = Instantiate(skidPrefab, hit.point + offset, slopeRotation);
+
             float playerWidthX = transform.localScale.x - skidScaleOffset;
             float playerWidthZ = transform.localScale.z - skidScaleOffset;
             skid.transform.localScale = new Vector3(playerWidthX, 1f, playerWidthZ);

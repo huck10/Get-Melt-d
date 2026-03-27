@@ -12,6 +12,9 @@ public class PlayerHealth : MonoBehaviour
     public float minScale = 0.3f;
     private Vector3 initialScale;
 
+    [Header("UI Reference")]
+    public HealthBar healthBarUI;
+
     [Header("Respawn Settings")]
     public Transform respawnAnchor;
     private Vector3 fallbackRespawnPoint;
@@ -23,14 +26,15 @@ public class PlayerHealth : MonoBehaviour
         currentHealth = maxHealth;
         initialScale = transform.localScale;
         fallbackRespawnPoint = transform.position;
+
+        // Force UI update on start
+        UpdateUIReference();
     }
 
     void Update()
     {
-        // Continuous melting logic
         if (currentHealth > 0)
         {
-            // Use TakeDamage so all the size and death logic stays centralized
             TakeDamage(meltRate * Time.deltaTime);
         }
     }
@@ -41,6 +45,7 @@ public class PlayerHealth : MonoBehaviour
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
         UpdatePlayerSize();
+        UpdateUIReference();
 
         if (currentHealth <= 0)
         {
@@ -50,46 +55,47 @@ public class PlayerHealth : MonoBehaviour
 
     void UpdatePlayerSize()
     {
-        // Calculate percentage and apply to scale
         float healthPercent = currentHealth / maxHealth;
         float currentScaleMultiplier = Mathf.Lerp(minScale, 1f, healthPercent);
         transform.localScale = initialScale * currentScaleMultiplier;
     }
 
+    // Helper method to ensure UI stays in sync
+    void UpdateUIReference()
+    {
+        if (healthBarUI != null)
+        {
+            healthBarUI.UpdateUI(currentHealth, maxHealth);
+        }
+    }
+
     public void Respawn()
     {
+        // 1. Reset Health Data
         currentHealth = maxHealth;
-        UpdatePlayerSize(); // Reset scale immediately on respawn
 
-        // Stop all momentum so you don't keep falling/moving after respawning
+        // 2. Update Visuals immediately
+        UpdatePlayerSize();
+        UpdateUIReference();
+
+        // 3. Reset Physics
         if (rb != null)
         {
             rb.velocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
         }
 
-        if (respawnAnchor != null)
-        {
-            transform.position = respawnAnchor.position;
-        }
-        else
-        {
-            transform.position = fallbackRespawnPoint;
-        }
+        // 4. Move to Spawn Point
+        transform.position = (respawnAnchor != null) ? respawnAnchor.position : fallbackRespawnPoint;
 
-        Debug.Log("The ice has melted! Respawning...");
+        Debug.Log("The ice has melted! Respawning and resetting HP bar.");
     }
 
-    public void SetNewRespawnAnchor(Transform newAnchor)
-    {
-        respawnAnchor = newAnchor;
-    }
-
-    // Optional: Call this to heal/refreeze the player (e.g., standing in a freezer)
     public void Refreeze(float amount)
     {
         currentHealth += amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
         UpdatePlayerSize();
+        UpdateUIReference();
     }
 }

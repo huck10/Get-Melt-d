@@ -1,19 +1,23 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement; // Essential for scene switching
+using UnityEngine.SceneManagement;
 
 public class MainmenuManager : MonoBehaviour
 {
-    // Use this function to load a scene by typing the name in Unity's Inspector
+    private void Awake()
+    {
+        // This is the "Magic Fix"
+        // It unfreezes the game clock so buttons can process clicks again
+        Time.timeScale = 1f;
+    }
+
     public void LoadSceneByName(string sceneName)
     {
+        Debug.Log("Attempting to load: " + sceneName);
         SceneManager.LoadScene(sceneName);
     }
 
     public void QuitGame()
     {
-        Debug.Log("Game is exiting...");
         Application.Quit();
     }
 }

@@ -1,30 +1,18 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GameStateManager : MonoBehaviour
 {
-    [SerializeField] GameObject pauseMenuContainer;
     public GameStates CurrentGameState => currentGameState;
     public GameStateTimeScale[] gameStateTimeScale;
     private GameStates currentGameState;
-    private float currentTimeScale;
-
-    public void PausedGame() { ChangeGameState(GameStates.PausedGame); }
-    public void InGame() { ChangeGameState(GameStates.InGame); }
-    public void LevelUp() { ChangeGameState(GameStates.LevelUp); }
-    public void EndGame() { ChangeGameState(GameStates.EndGame); }
-    public void InTutorial() { ChangeGameState(GameStates.InTutorial); }
 
     private void Start()
     {
+        // Start with whatever state is next in your holder
         ChangeGameState(GameStateHolder.NextState);
     }
 
-    // REMOVED Update() — Escape and controller pause
-    // are now handled exclusively in PauseGame.cs
-
-    private void ChangeGameState(GameStates newState)
+    public void ChangeGameState(GameStates newState)
     {
         foreach (var item in gameStateTimeScale)
         {
@@ -32,36 +20,10 @@ public class GameStateManager : MonoBehaviour
             {
                 currentGameState = newState;
                 Time.timeScale = item.timeScale;
-                currentTimeScale = item.timeScale;
-                Debug.LogWarning("GameState: " + currentGameState + " TimeScale: " + currentTimeScale);
+                Debug.LogWarning("GameState: " + currentGameState + " TimeScale: " + Time.timeScale);
                 return;
             }
         }
-        Debug.LogWarning("GameState not found!");
         Time.timeScale = 1f;
-    }
-
-    public void TogglePause()
-    {
-        if (pauseMenuContainer == null)
-        {
-            Debug.Log("Pause menu container not found!");
-            return;
-        }
-
-        if (currentGameState == GameStates.InGame)
-        {
-            PausedGame();
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-            pauseMenuContainer.SetActive(true);
-        }
-        else if (currentGameState == GameStates.PausedGame)
-        {
-            InGame();
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-            pauseMenuContainer.SetActive(false);
-        }
     }
 }
