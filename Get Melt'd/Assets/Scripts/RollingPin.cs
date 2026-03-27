@@ -4,27 +4,25 @@ using UnityEngine;
 
 public class RollingPin : MonoBehaviour
 {
-    public float torqueAmount = 10f;
+    public float speed = 5f;
+    private Rigidbody rb;
+    private int direction = 1;
 
-    private Rigidbody otherObjRB;
-    [SerializeField] private bool move = false;
-
-    private void OnCollisionEnter(Collision collision)
+    void Start()
     {
-        IceCube ice = collision.gameObject.GetComponentInParent<IceCube>();
-         
-        if (ice != null)
-        {
-            move = true;
-            otherObjRB = ice.GetComponent<Rigidbody>();
-        }
+        rb = GetComponent<Rigidbody>();
     }
 
     void FixedUpdate()
     {
-        if (move)
+        rb.velocity = new Vector3(0f, rb.velocity.y, speed * direction);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("RollingPinStopper"))
         {
-            otherObjRB.AddTorque(transform.right * torqueAmount, ForceMode.Impulse);
+            direction *= -1;
         }
     }
 }
