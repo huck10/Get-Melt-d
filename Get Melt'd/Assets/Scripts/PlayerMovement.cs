@@ -12,8 +12,14 @@ public class PlayerMovement : MonoBehaviour
     [Header("Ground Detection")]
     public LayerMask groundMask;
     public LayerMask slopeMask;
+<<<<<<< HEAD
     public Transform groundCheck; // optional: used for box check (place at feet)
     public Vector3 boxSize = new Vector3(0.5f, 0.1f, 0.5f); // X = width, Y = thickness, Z = depth
+=======
+    public LayerMask skidMask;
+    public Transform groundCheck;
+    public Vector3 boxSize = new Vector3(0.5f, 0.1f, 0.5f); // Adjust this to match your player width
+>>>>>>> yukim
     public float groundDistance = 0.2f;
 
     // Fields matching ThirdPersonController style fallback
@@ -152,7 +158,7 @@ public class PlayerMovement : MonoBehaviour
     void SpawnSkid()
     {
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, Vector3.down, out hit, 2f, groundMask))
+        if (Physics.Raycast(transform.position, Vector3.down, out hit, 2f, skidMask))
         {
             Quaternion slopeRotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
             Vector3 offset = hit.normal * Random.Range(0.01f, 0.02f);

@@ -88,4 +88,23 @@ public class IceCube : MonoBehaviour
 
         hpTempText.text = "HP: " + Mathf.FloorToInt(hp);
     }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Pan") && transform.parent == null)
+        {
+            transform.SetParent(collision.transform);
+            transform.localScale = originalScale;    
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Pan") && transform.parent == collision.transform)
+        {
+            transform.SetParent(null);              
+        }
+    }
+
+
 }

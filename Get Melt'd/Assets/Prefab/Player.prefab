@@ -79,7 +79,7 @@ MonoBehaviour:
   meltedTextContainer: {fileID: 0}
   hpTempText: {fileID: 0}
   shrinkAmount: 0.1
-  interval: 1
+  interval: 4
   showMeltedTextTime: 3
 --- !u!114 &7161390588180929506
 MonoBehaviour:
@@ -96,16 +96,20 @@ MonoBehaviour:
   visualModel: {fileID: 7056163462007477922}
   waterParticle: {fileID: 5513882886850485801, guid: 42ec2a25b33c48243b9d41a286247bf5, type: 3}
   skidPrefab: {fileID: 619838003463243098, guid: cb04b0a909686cc4eb7190bb19549982, type: 3}
-  spawnDistance: 0.5
   groundMask:
     serializedVersion: 2
-    m_Bits: 503
+    m_Bits: 1015
   slopeMask:
     serializedVersion: 2
-    m_Bits: 503
+    m_Bits: 1015
+  skidMask:
+    serializedVersion: 2
+    m_Bits: 1535
   groundCheck: {fileID: 718677705087466788}
-  skidScaleOffset: 0.2
+  boxSize: {x: 0.5, y: 0.1, z: 0.5}
   groundDistance: 0.2
+  skidScaleOffset: 0.2
+  spawnDistance: 0.5
   speed: 15
   jumpForce: 20
 --- !u!1 &8619823434247870414
