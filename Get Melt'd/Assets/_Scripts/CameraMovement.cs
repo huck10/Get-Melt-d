@@ -24,9 +24,10 @@ public class CameraMovement : MonoBehaviour
     public float snapSpeed = 8f;
 
     [Header("Collision Settings")]
-    public LayerMask collisionMask;
+    public LayerMask collisionMask;           // environment layers only (exclude player)
     public float collisionPadding = 0.2f;
     public float cameraSphereRadius = 0.2f;
+    public float collisionSmoothSpeed = 10f;  // higher = snappier
 
     private float currentX = 0f;
     private float currentY = 20f;
@@ -51,34 +52,27 @@ public class CameraMovement : MonoBehaviour
 
         if (!target) return;
 
-        // Right stick input
         float stickX = Input.GetAxis("RightStickX") * controllerSensitivity * Time.deltaTime * 60f;
         float stickY = Input.GetAxis("RightStickY") * controllerSensitivity * Time.deltaTime * 60f;
 
-        // Mouse input
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
 
-        // RS click (joystick button 9) — snap camera behind character like AAA games
         if (Input.GetKeyDown(KeyCode.Joystick1Button9))
         {
             isSnapping = true;
-            // Target is directly behind character at a comfortable angle
             snapTargetX = target.eulerAngles.y;
             snapTargetY = 15f;
         }
 
-        // Cancel snap if player manually moves right stick
         if (Mathf.Abs(stickX) > 0.1f || Mathf.Abs(stickY) > 0.1f)
             isSnapping = false;
 
         if (isSnapping)
         {
-            // Smoothly swing camera behind character (AAA style)
             currentX = Mathf.LerpAngle(currentX, snapTargetX, snapSpeed * Time.deltaTime);
             currentY = Mathf.Lerp(currentY, snapTargetY, snapSpeed * Time.deltaTime);
 
-            // Stop snapping once close enough
             if (Mathf.Abs(Mathf.DeltaAngle(currentX, snapTargetX)) < 0.5f &&
                 Mathf.Abs(currentY - snapTargetY) < 0.5f)
             {
@@ -89,13 +83,11 @@ public class CameraMovement : MonoBehaviour
         }
         else
         {
-            // Normal look
             currentX += mouseX + stickX;
             currentY -= mouseY + stickY;
             currentY = Mathf.Clamp(currentY, minVerticalAngle, maxVerticalAngle);
         }
 
-        // Zoom
         float scrollZoom = Input.GetAxis("Mouse ScrollWheel") * zoomSpeed;
         float triggerZoom = (Input.GetAxis("ZoomIn") - Input.GetAxis("ZoomOut")) * (zoomSpeed * 0.05f);
 
@@ -110,17 +102,33 @@ public class CameraMovement : MonoBehaviour
     {
         if (!target) return;
 
+        // rotation and desired positions
         Quaternion rotation = Quaternion.Euler(currentY, currentX, 0);
-        Vector3 targetPosition = target.position + (rotation * offset);
-        Vector3 direction = rotation * Vector3.back;
+        Vector3 desiredPos = target.position + (rotation * offset) - (rotation * Vector3.forward * desiredDistance);
 
+        // ray origin is the target eye (player + offset)
+        Vector3 rayOrigin = target.position + (rotation * offset);
+        Vector3 rayDir = (desiredPos - rayOrigin);
+        float rayDist = rayDir.magnitude;
+        if (rayDist <= 0.0001f) rayDir = -transform.forward; else rayDir /= rayDist;
+
+        // SphereCast from eye toward desired camera position
         RaycastHit hit;
-        if (Physics.SphereCast(targetPosition, cameraSphereRadius, direction, out hit, desiredDistance, collisionMask))
-            currentDistance = Mathf.Clamp(hit.distance - collisionPadding, minDistance, desiredDistance);
-        else
-            currentDistance = Mathf.Lerp(currentDistance, desiredDistance, Time.deltaTime * 10f);
+        float targetDistance = desiredDistance;
 
-        transform.position = targetPosition + direction * currentDistance;
-        transform.LookAt(targetPosition);
+        if (Physics.SphereCast(rayOrigin, cameraSphereRadius, rayDir, out hit, rayDist, collisionMask, QueryTriggerInteraction.Ignore))
+        {
+            // place camera slightly in front of the hit point
+            float hitDistance = Mathf.Max(hit.distance - collisionPadding, minDistance);
+            targetDistance = Mathf.Clamp(hitDistance, minDistance, desiredDistance);
+        }
+
+        // smooth currentDistance toward targetDistance
+        currentDistance = Mathf.Lerp(currentDistance, targetDistance, Time.deltaTime * collisionSmoothSpeed);
+
+        // final camera position and look
+        Vector3 finalPos = rayOrigin + rayDir * currentDistance;
+        transform.position = finalPos;
+        transform.LookAt(target.position + (rotation * Vector3.zero)); // look at target + offset center
     }
 }
