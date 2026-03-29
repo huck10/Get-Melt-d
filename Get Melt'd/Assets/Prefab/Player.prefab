@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 327562744810718932}
   - component: {fileID: 7812585427073293480}
   - component: {fileID: 6356879282544385885}
-  - component: {fileID: 3120460189810351450}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -83,6 +82,8 @@ MonoBehaviour:
   meltRate: 2
   minScale: 0.3
   healthBarUI: {fileID: 0}
+  meltedUI: {fileID: 0}
+  showUITime: 0
   respawnAnchor: {fileID: 0}
 --- !u!65 &6356879282544385885
 BoxCollider:
@@ -105,36 +106,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &3120460189810351450
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2219489684688313242}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0444af6cf4bcf4d41a0b641edb150aa3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  visualModel: {fileID: 6400225319565032484}
-  waterParticle: {fileID: 5513882886850485801, guid: 42ec2a25b33c48243b9d41a286247bf5, type: 3}
-  skidPrefab: {fileID: 619838003463243098, guid: cb04b0a909686cc4eb7190bb19549982, type: 3}
-  groundMask:
-    serializedVersion: 2
-    m_Bits: 2039
-  slopeMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  skidMask:
-    serializedVersion: 2
-    m_Bits: 1535
-  groundCheck: {fileID: 3611937517409868488}
-  groundDistance: 0.2
-  skidScaleOffset: 0.2
-  spawnDistance: 0.5
-  speed: 10
-  jumpForce: 20
 --- !u!1 &2891254747929159215
 GameObject:
   m_ObjectHideFlags: 0
@@ -162,7 +133,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -0.534, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 3921940944366149889}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

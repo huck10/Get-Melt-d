@@ -25,4 +25,15 @@ public class RotatingPan : MonoBehaviour
     {
         direction = (direction == RotationDirection.Clockwise) ? RotationDirection.CounterClockwise : RotationDirection.Clockwise;
     }
+    public Vector3 GetPointVelocity(Vector3 worldPoint)
+    {
+        Vector3 center = transform.position;
+        Vector3 r = worldPoint - center;
+        Vector3 rFlat = new Vector3(r.x, 0f, r.z);
+        float angular = ((direction == RotationDirection.Clockwise) ? -1f : 1f) * speed * Mathf.Deg2Rad;
+        Vector3 omega = new Vector3(0f, angular, 0f);
+        Vector3 v = Vector3.Cross(omega, rFlat);
+        return v;
+    }
+
 }
