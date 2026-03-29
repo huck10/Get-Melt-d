@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
@@ -14,6 +15,8 @@ public class PlayerHealth : MonoBehaviour
 
     [Header("UI Reference")]
     public HealthBar healthBarUI;
+    public GameObject meltedUI;
+    public float showUITime;
 
     [Header("Respawn Settings")]
     public Transform respawnAnchor;
@@ -71,6 +74,7 @@ public class PlayerHealth : MonoBehaviour
 
     public void Respawn()
     {
+        StartCoroutine(EnableDisableInterval(meltedUI));
         // 1. Reset Health Data
         currentHealth = maxHealth;
 
@@ -97,5 +101,12 @@ public class PlayerHealth : MonoBehaviour
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
         UpdatePlayerSize();
         UpdateUIReference();
+    }
+
+    private IEnumerator EnableDisableInterval(GameObject target)
+    {
+        target.SetActive(true);
+        yield return new WaitForSecondsRealtime(showUITime);
+        target.SetActive(false);
     }
 }
