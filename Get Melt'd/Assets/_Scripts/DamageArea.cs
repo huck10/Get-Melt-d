@@ -12,11 +12,11 @@ public class DamageArea : MonoBehaviour
     {
         if (Time.time >= nextDamageTime)
         {
-            IceCube ice = collision.collider.GetComponentInParent<IceCube>();
+            PlayerHealth player = collision.collider.GetComponentInParent<PlayerHealth>();
 
-            if (ice != null)
+            if (player != null)
             {
-                ice.Shrink(damageAmount);
+                player.TakeDamage(damageAmount);
 
                 nextDamageTime = Time.time + damageTickRate;
                 Debug.Log("Sizzle! Player is melting. Next tick in " + damageTickRate + "s");

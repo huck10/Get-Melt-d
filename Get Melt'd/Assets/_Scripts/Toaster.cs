@@ -56,7 +56,7 @@ public class Toaster : MonoBehaviour
     {
         if (!isUp) return;
 
-        PlayerMovement player = collision.gameObject.GetComponentInParent<PlayerMovement>();
+        NewPlayerMovement player = collision.gameObject.GetComponentInParent<NewPlayerMovement>();
         if (player == null)
         {
             return;

@@ -7,7 +7,7 @@ public class Sponge : MonoBehaviour
     public float spongeForce = 6.0f;
     private void OnCollisionEnter(Collision collision)
     {
-        PlayerMovement player = collision.gameObject.GetComponentInParent<PlayerMovement>();
+        NewPlayerMovement player = collision.gameObject.GetComponentInParent<NewPlayerMovement>();
         if (player == null)
         {
             return;

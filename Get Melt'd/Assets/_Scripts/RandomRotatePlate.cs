@@ -23,8 +23,8 @@ public class RandomRotatePlate : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        IceCube ice = collision.gameObject.GetComponent<IceCube>();
-        if(ice != null)
+        PlayerHealth player = collision.gameObject.GetComponent<PlayerHealth>();
+        if(player != null)
         {
             if (Random.value < chanceToRotate)
             {
