@@ -21,15 +21,18 @@ public class NewPlayerMovement : MonoBehaviour
     public float speed = 6.0f;
     public float jumpForce = 5.0f;
 
+    private PlayerHealth health;
     private Rigidbody body;
     private float smooth = 10f;
     private float slopeDetectionDistance = 2.0f;
     private bool wasAirborne = true;
     private Vector3 lastSpawnPos;
     private bool isGrounded;
+    private HashSet<GameObject> touchingObjects = new HashSet<GameObject>();
 
     void Start()
     {
+        health = GetComponent<PlayerHealth>();
         body = GetComponent<Rigidbody>();
         if (body != null)
             body.freezeRotation = true;
@@ -46,6 +49,13 @@ public class NewPlayerMovement : MonoBehaviour
         }
 
         SpawnSkid();
+
+        int count = touchingObjects.Count;
+        if (count > 1)
+        {
+            Debug.Log("Currently touching " + count + " objects");
+            health.TakeDamage(1000);
+        }
     }
 
     void ShowWaterParticle()
@@ -117,6 +127,17 @@ public class NewPlayerMovement : MonoBehaviour
                 lastSpawnPos = transform.position;
             }
         }
-      
+    }
+
+    private void OnCollisionEnter(Collision other)
+    {
+        if (other.gameObject.CompareTag("Smash"))
+            touchingObjects.Add(other.gameObject);
+    }
+
+    private void OnCollisionExit(Collision other)
+    {
+        if (other.gameObject.CompareTag("Smash"))
+            touchingObjects.Remove(other.gameObject);
     }
 }
