@@ -10,7 +10,12 @@ public class SoundManager : MonoBehaviour
     [Header("Mixer Reference")]
     public AudioMixer masterMixer;
 
-    // These will be auto-filled by the script whenever a scene loads
+    [Header("Button Sprites")]
+    public Sprite musicOnSprite;
+    public Sprite musicOffSprite;
+    public Sprite sfxOnSprite;
+    public Sprite sfxOffSprite;
+
     private Slider musicSlider;
     private Slider sfxSlider;
 
@@ -23,9 +28,11 @@ public class SoundManager : MonoBehaviour
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
-
-            // This tells Unity: "Every time a scene is loaded, run the 'OnSceneLoaded' function"
             SceneManager.sceneLoaded += OnSceneLoaded;
+
+            // Load mute states from memory
+            isMusicMuted = PlayerPrefs.GetInt("MusicMuted", 0) == 1;
+            isSFXMuted = PlayerPrefs.GetInt("SFXMuted", 0) == 1;
         }
         else
         {
@@ -33,57 +40,130 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    // This runs automatically whenever you switch scenes
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    private void Start()
     {
-        RefreshSliderReferences();
+        // Initial volume application on game start
+        ApplyCurrentVolumes();
     }
 
-    public void RefreshSliderReferences()
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // 1. Find the sliders in the NEW scene by their names
-        GameObject mObj = GameObject.Find("MusicSlider");
-        GameObject sObj = GameObject.Find("SFXSlider");
+        // A small delay ensures UI is fully initialized before searching
+        Invoke("RefreshUIReferences", 0.1f);
+    }
 
-        if (mObj != null)
+    public void RefreshUIReferences()
+    {
+        // --- 1. SLIDER LOGIC ---
+        // Using helper to find sliders even if they are inactive (inside a closed panel)
+        Slider mSlider = FindObjectIncludingInactive<Slider>("MusicSlider") ?? FindObjectIncludingInactive<Slider>("MusicSlider 1");
+        if (mSlider != null)
         {
-            musicSlider = mObj.GetComponent<Slider>();
-
-            // 2. Set the slider handle to the SAVED volume immediately
+            musicSlider = mSlider;
             musicSlider.value = PlayerPrefs.GetFloat("MusicVol", 0.75f);
-
-            // 3. Tell the slider to talk to THIS script when moved
-            musicSlider.onValueChanged.RemoveAllListeners(); // Clear old links
+            musicSlider.onValueChanged.RemoveAllListeners();
             musicSlider.onValueChanged.AddListener(SetMusicVolume);
         }
 
-        if (sObj != null)
+        Slider sSlider = FindObjectIncludingInactive<Slider>("SFXSlider") ?? FindObjectIncludingInactive<Slider>("SFXSlider 1");
+        if (sSlider != null)
         {
-            sfxSlider = sObj.GetComponent<Slider>();
+            sfxSlider = sSlider;
             sfxSlider.value = PlayerPrefs.GetFloat("SFXVol", 0.75f);
-
             sfxSlider.onValueChanged.RemoveAllListeners();
             sfxSlider.onValueChanged.AddListener(SetSFXVolume);
         }
+
+        // --- 2. BUTTON LOGIC ---
+        // Using helper to find buttons even if they are inactive
+        GameObject mBtnObj = FindObjectIncludingInactive("MusicButton") ?? FindObjectIncludingInactive("MusicButton 1");
+        if (mBtnObj != null)
+        {
+            Button b = mBtnObj.GetComponent<Button>();
+            Image img = mBtnObj.GetComponent<Image>();
+
+            // Set initial sprite based on saved mute state
+            img.sprite = isMusicMuted ? musicOffSprite : musicOnSprite;
+
+            b.onClick.RemoveAllListeners();
+            b.onClick.AddListener(() => ToggleMusic(img));
+        }
+
+        GameObject sBtnObj = FindObjectIncludingInactive("SFXButton") ?? FindObjectIncludingInactive("SFXButton 1");
+        if (sBtnObj != null)
+        {
+            Button b = sBtnObj.GetComponent<Button>();
+            Image img = sBtnObj.GetComponent<Image>();
+
+            img.sprite = isSFXMuted ? sfxOffSprite : sfxOnSprite;
+
+            b.onClick.RemoveAllListeners();
+            b.onClick.AddListener(() => ToggleSFX(img));
+        }
+    }
+
+    public void ToggleMusic(Image buttonImage)
+    {
+        isMusicMuted = !isMusicMuted;
+        PlayerPrefs.SetInt("MusicMuted", isMusicMuted ? 1 : 0);
+
+        buttonImage.sprite = isMusicMuted ? musicOffSprite : musicOnSprite;
+        ApplyCurrentVolumes();
+    }
+
+    public void ToggleSFX(Image buttonImage)
+    {
+        isSFXMuted = !isSFXMuted;
+        PlayerPrefs.SetInt("SFXMuted", isSFXMuted ? 1 : 0);
+
+        buttonImage.sprite = isSFXMuted ? sfxOffSprite : sfxOnSprite;
+        ApplyCurrentVolumes();
+    }
+
+    private void ApplyCurrentVolumes()
+    {
+        // Apply Music
+        float mVol = isMusicMuted ? 0.0001f : PlayerPrefs.GetFloat("MusicVol", 0.75f);
+        masterMixer.SetFloat("MusicVol", Mathf.Log10(Mathf.Max(mVol, 0.0001f)) * 20);
+
+        // Apply SFX
+        float sVol = isSFXMuted ? 0.0001f : PlayerPrefs.GetFloat("SFXVol", 0.75f);
+        masterMixer.SetFloat("SFXVol", Mathf.Log10(Mathf.Max(sVol, 0.0001f)) * 20);
     }
 
     public void SetMusicVolume(float value)
     {
-        if (!isMusicMuted)
-        {
-            float dB = Mathf.Log10(Mathf.Max(value, 0.0001f)) * 20;
-            masterMixer.SetFloat("MusicVol", dB);
-        }
         PlayerPrefs.SetFloat("MusicVol", value);
+        if (!isMusicMuted) ApplyCurrentVolumes();
     }
 
     public void SetSFXVolume(float value)
     {
-        if (!isSFXMuted)
-        {
-            float dB = Mathf.Log10(Mathf.Max(value, 0.0001f)) * 20;
-            masterMixer.SetFloat("SFXVol", dB);
-        }
         PlayerPrefs.SetFloat("SFXVol", value);
+        if (!isSFXMuted) ApplyCurrentVolumes();
+    }
+
+    // --- HELPER FUNCTIONS ---
+
+    // Finds any GameObject by name, even if it's deactivated
+    private GameObject FindObjectIncludingInactive(string name)
+    {
+        GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
+        foreach (GameObject obj in allObjects)
+        {
+            if (obj.name == name) return obj;
+        }
+        return null;
+    }
+
+    // Finds a specific component type by name, even if deactivated
+    private T FindObjectIncludingInactive<T>(string name) where T : Component
+    {
+        T[] allComponents = Resources.FindObjectsOfTypeAll<T>();
+        foreach (T comp in allComponents)
+        {
+            if (comp.gameObject.name == name) return comp;
+        }
+        return null;
     }
 }

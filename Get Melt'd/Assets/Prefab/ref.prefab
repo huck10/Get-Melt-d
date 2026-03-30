@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4765234270522362164
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8521920237343091270}
+  m_Layer: 0
+  m_Name: Fridge_Hinge.
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8521920237343091270
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4765234270522362164}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.000000029802326, y: -0.7071068, z: -0.000000029802326, w: 0.7071068}
+  m_LocalPosition: {x: -0.022485828, y: 0.093982, z: 0.058951408}
+  m_LocalScale: {x: 0.0009999998, y: 0.001, z: 0.0009999997}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8779586286987220050}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &7787895181474904496
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -191,7 +222,10 @@ PrefabInstance:
     - {fileID: -8700617353114198275, guid: 17fede0ea25098049a622ba60f56b5b6, type: 3}
     - {fileID: 3334194090898603605, guid: 17fede0ea25098049a622ba60f56b5b6, type: 3}
     - {fileID: -309494312552053891, guid: 17fede0ea25098049a622ba60f56b5b6, type: 3}
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 1568222791651175906, guid: 17fede0ea25098049a622ba60f56b5b6, type: 3}
+      insertIndex: 0
+      addedObject: {fileID: 8521920237343091270}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: -40495925223878061, guid: 17fede0ea25098049a622ba60f56b5b6, type: 3}
       insertIndex: -1
@@ -377,6 +411,11 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4068373912626513877, guid: 17fede0ea25098049a622ba60f56b5b6, type: 3}
+--- !u!4 &8779586286987220050 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1568222791651175906, guid: 17fede0ea25098049a622ba60f56b5b6, type: 3}
+  m_PrefabInstance: {fileID: 7787895181474904496}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &9100004611664975855 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1323386064504401503, guid: 17fede0ea25098049a622ba60f56b5b6, type: 3}
