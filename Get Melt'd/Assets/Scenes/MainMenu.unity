@@ -1240,7 +1240,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\tGabriel Lorenzo B. Yukim\n\t<size=70%>Game programmer/UI</color></size>"
+  m_text: "\tGabriel Lorenzo B. Yukim\n\t<size=70%>Game programmer/ Level Designer</color></size>"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ee43f5eac66d71f4ab8650b1a984e643, type: 2}
   m_sharedMaterial: {fileID: -7331237961000414526, guid: ee43f5eac66d71f4ab8650b1a984e643, type: 2}
@@ -2197,7 +2197,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\tkarl Christian B. Balaton\n\t<size=70%>Game programmer/UI</color></size>"
+  m_text: "\tkarl Christian B. Balaton\n\t<size=70%>Game programmer/ UI </color></size>"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ee43f5eac66d71f4ab8650b1a984e643, type: 2}
   m_sharedMaterial: {fileID: -7331237961000414526, guid: ee43f5eac66d71f4ab8650b1a984e643, type: 2}
@@ -9480,7 +9480,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\tRyan Adrian T. Balona\n\t<size=70%>Game programmer/UI</color></size>"
+  m_text: "\tRyan Adrian T. Balona\n\t<size=70%>Game programmer/ UI / Sound Designer</color></size>"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ee43f5eac66d71f4ab8650b1a984e643, type: 2}
   m_sharedMaterial: {fileID: -7331237961000414526, guid: ee43f5eac66d71f4ab8650b1a984e643, type: 2}
@@ -9614,7 +9614,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\tJosanth Morelos\n\t<size=70%>Game programmer/UI</color></size>"
+  m_text: "\tJosanth Morelos\n\t<size=70%>Game programmer/ Level Designer / 3d and
+    2d artist / shader artist</color></size>"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ee43f5eac66d71f4ab8650b1a984e643, type: 2}
   m_sharedMaterial: {fileID: -7331237961000414526, guid: ee43f5eac66d71f4ab8650b1a984e643, type: 2}
@@ -11055,7 +11056,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\tJan Carlo C. Ancog\n\t<size=70%>Game programmer/UI</color></size>"
+  m_text: "\tJan Carlo C. Ancog\n\t<size=70%>Game programmer/ UI / 3d modeler</color></size>"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ee43f5eac66d71f4ab8650b1a984e643, type: 2}
   m_sharedMaterial: {fileID: -7331237961000414526, guid: ee43f5eac66d71f4ab8650b1a984e643, type: 2}
