@@ -1,5 +1,6 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
 public class GameManager : MonoBehaviour
 {
@@ -7,62 +8,75 @@ public class GameManager : MonoBehaviour
     public GameObject pausePanel;
 
     [Header("References")]
-    public GameStateManager stateManager; // Drag your GameStateManager object here
+    public GameStateManager stateManager;
+    public ControllerCursor controllerCursor;
 
     private bool isPaused = false;
+    private InputAction pauseAction;
+
+    void Awake()
+    {
+        if (stateManager == null) stateManager = FindFirstObjectByType<GameStateManager>();
+        if (controllerCursor == null) controllerCursor = FindFirstObjectByType<ControllerCursor>();
+
+        pauseAction = new InputAction("Pause", binding: "<Gamepad>/start");
+        pauseAction.AddBinding("<Keyboard>/escape");
+        pauseAction.AddBinding("<Keyboard>/p");
+    }
+
+    void OnEnable()
+    {
+        pauseAction.Enable();
+        pauseAction.performed += OnPausePerformed;
+    }
+
+    void OnDisable()
+    {
+        pauseAction.performed -= OnPausePerformed;
+        pauseAction.Disable();
+    }
+
+    private void OnPausePerformed(InputAction.CallbackContext context)
+    {
+        if (isPaused) Resume();
+        else Pause();
+    }
 
     void Start()
     {
-        // If stateManager is missing, try to find it in the scene
-        if (stateManager == null) stateManager = FindFirstObjectByType<GameStateManager>();
-
         Resume();
-    }
-
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
-        {
-            if (isPaused) Resume();
-            else Pause();
-        }
     }
 
     public void Pause()
     {
         isPaused = true;
-
-        // Visuals
         if (pausePanel != null) pausePanel.SetActive(true);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-
-        // Logic
         if (stateManager != null) stateManager.ChangeGameState(GameStates.PausedGame);
+        if (controllerCursor != null) controllerCursor.SetCursorVisible(true);
     }
 
     public void Resume()
     {
         isPaused = false;
-
-        // Visuals
         if (pausePanel != null) pausePanel.SetActive(false);
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-
-        // Logic
         if (stateManager != null) stateManager.ChangeGameState(GameStates.InGame);
+        if (controllerCursor != null) controllerCursor.SetCursorVisible(false);
     }
 
     public void RestartGame()
     {
-        // Important: Reset state to InGame before loading
+        Time.timeScale = 1f;
         if (stateManager != null) stateManager.ChangeGameState(GameStates.InGame);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void QuitToMainMenu()
     {
+        Time.timeScale = 1f;
         if (stateManager != null) stateManager.ChangeGameState(GameStates.InGame);
         SceneManager.LoadScene("MainMenu");
     }
