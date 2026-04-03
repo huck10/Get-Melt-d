@@ -1,15 +1,13 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
     [Header("UI Panels")]
     public GameObject pausePanel;
-    public GameObject winPanel;         // ✅ Assign your win panel here
-
-    [Header("Win Settings")]
-    public string winSceneName = "WinScene"; // ✅ Set the scene name that triggers win
+    public GameObject winPanel;
 
     [Header("References")]
     public GameStateManager stateManager;
@@ -17,6 +15,7 @@ public class GameManager : MonoBehaviour
 
     private bool isPaused = false;
     private InputAction pauseAction;
+    private bool creditsActive = false;
 
     void Awake()
     {
@@ -32,52 +31,68 @@ public class GameManager : MonoBehaviour
     {
         pauseAction.Enable();
         pauseAction.performed += OnPausePerformed;
-        SceneManager.sceneLoaded += OnSceneLoaded; // ✅ Listen for scene changes
     }
 
     void OnDisable()
     {
         pauseAction.performed -= OnPausePerformed;
         pauseAction.Disable();
-        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     void Start()
     {
         Resume();
-        CheckForWinScene(); // ✅ Check immediately in case we start on the win scene
-    }
-
-    // ✅ Fires every time a scene loads
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        CheckForWinScene();
-    }
-
-    void CheckForWinScene()
-    {
-        if (SceneManager.GetActiveScene().name == winSceneName)
-        {
-            ShowWinPanel();
-        }
     }
 
     public void ShowWinPanel()
     {
-        isPaused = true; // ✅ Prevent pausing while win panel is open
-        if (winPanel != null) winPanel.SetActive(true);
+        isPaused = true;
+        creditsActive = true;
+
+        if (winPanel != null)
+        {
+            winPanel.SetActive(true);
+        }
+
         if (pausePanel != null) pausePanel.SetActive(false);
+
+        Time.timeScale = 0f;
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+
         if (stateManager != null) stateManager.ChangeGameState(GameStates.PausedGame);
         if (controllerCursor != null) controllerCursor.SetCursorVisible(true);
-        Debug.Log("🏆 Win panel shown!");
+
+        // ✅ Start checking for the end of the credits animation
+        StartCoroutine(WaitAndReturnToMenu());
+    }
+
+    private IEnumerator WaitAndReturnToMenu()
+    {
+        Animator anim = winPanel.GetComponentInChildren<Animator>();
+        if (anim != null)
+        {
+            // Wait for the end of the current frame so the animator can transition
+            yield return null;
+
+            // Get the length of the "endcredits" animation clip
+            float animationLength = anim.GetCurrentAnimatorStateInfo(0).length;
+
+            // ✅ Use Realtime because Time.timeScale is 0!
+            yield return new WaitForSecondsRealtime(animationLength + 1.0f); // Added 1s buffer
+
+            if (creditsActive) QuitToMainMenu();
+        }
     }
 
     private void OnPausePerformed(InputAction.CallbackContext context)
     {
-        // ✅ Disable pause input while win panel is showing
-        if (winPanel != null && winPanel.activeSelf) return;
+        // ✅ If credits are playing, pressing Esc skips to Main Menu
+        if (creditsActive)
+        {
+            QuitToMainMenu();
+            return;
+        }
 
         if (isPaused) Resume();
         else Pause();
@@ -90,31 +105,32 @@ public class GameManager : MonoBehaviour
         if (pausePanel != null) pausePanel.SetActive(true);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-        if (stateManager != null) stateManager.ChangeGameState(GameStates.PausedGame);
-        if (controllerCursor != null) controllerCursor.SetCursorVisible(true);
     }
 
     public void Resume()
     {
         isPaused = false;
+        creditsActive = false;
         Time.timeScale = 1f;
+
         if (pausePanel != null) pausePanel.SetActive(false);
+        if (winPanel != null) winPanel.SetActive(false);
+
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         if (stateManager != null) stateManager.ChangeGameState(GameStates.InGame);
-        if (controllerCursor != null) controllerCursor.SetCursorVisible(false);
     }
 
     public void RestartGame()
     {
         Time.timeScale = 1f;
-        if (stateManager != null) stateManager.ChangeGameState(GameStates.InGame);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void QuitToMainMenu()
     {
         Time.timeScale = 1f;
+        // ✅ Ensure the state is reset before leaving
         if (stateManager != null) stateManager.ChangeGameState(GameStates.InGame);
         SceneManager.LoadScene("MainMenu");
     }
