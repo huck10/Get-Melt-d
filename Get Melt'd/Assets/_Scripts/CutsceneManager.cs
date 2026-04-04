@@ -8,35 +8,50 @@ public class CutsceneManager : MonoBehaviour
     [SerializeField] VideoPlayer videoPlayer;
     [SerializeField] string sceneToLoadAfter = "Main";
 
-    // Static flag — persists during the session, resets when game is quit
     private static bool hasPlayedCutscene = false;
+
+    private void Awake()
+    {
+        // 1. Start preparing the video as soon as the object exists
+        if (!hasPlayedCutscene && videoPlayer != null)
+        {
+            videoPlayer.Prepare();
+        }
+    }
 
     private void Start()
     {
         if (hasPlayedCutscene)
         {
-            // Already played this session — skip straight to Main
             LoadNextScene();
             return;
         }
 
-        // Make sure game clock is running
         Time.timeScale = 1f;
-
-        // Hide cursor during cutscene
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        // Play the video
+        // 2. We wait until the video is actually ready before playing
+        videoPlayer.prepareCompleted += OnVideoPrepared;
         videoPlayer.loopPointReached += OnCutsceneFinished;
-        videoPlayer.Play();
+
+        // If it was already prepared in Awake, this will trigger immediately
+        if (videoPlayer.isPrepared)
+        {
+            videoPlayer.Play();
+        }
+    }
+
+    private void OnVideoPrepared(VideoPlayer vp)
+    {
+        vp.Play();
     }
 
     private void Update()
     {
-        // Optional: skip cutscene by pressing any key or controller button
         if (Input.anyKeyDown)
         {
+            videoPlayer.prepareCompleted -= OnVideoPrepared;
             videoPlayer.loopPointReached -= OnCutsceneFinished;
             hasPlayedCutscene = true;
             LoadNextScene();
