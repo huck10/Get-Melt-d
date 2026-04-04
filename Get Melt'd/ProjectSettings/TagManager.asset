@@ -19,7 +19,7 @@ TagManager:
   - ObjectsWithBehaviour
   - RotatingObjects
   - RollingPinStopper
-  - 
+  - IgnoreBySkid
   - 
   - 
   - 

@@ -109,7 +109,7 @@ public class NewPlayerMovement : MonoBehaviour
 
     void SpawnSkid()
     {
-        if (body.velocity.magnitude > 0.5f && isGrounded)
+        if (body.velocity.magnitude > 0.5f && isGrounded  && transform.root.CompareTag("Player"))
         {
             if (Vector3.Distance(transform.position, lastSpawnPos) > spawnDistance)
             {
