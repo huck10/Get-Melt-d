@@ -49,11 +49,7 @@ public class GameManager : MonoBehaviour
         isPaused = true;
         creditsActive = true;
 
-        if (winPanel != null)
-        {
-            winPanel.SetActive(true);
-        }
-
+        if (winPanel != null) winPanel.SetActive(true);
         if (pausePanel != null) pausePanel.SetActive(false);
 
         Time.timeScale = 0f;
@@ -63,7 +59,6 @@ public class GameManager : MonoBehaviour
         if (stateManager != null) stateManager.ChangeGameState(GameStates.PausedGame);
         if (controllerCursor != null) controllerCursor.SetCursorVisible(true);
 
-        // ✅ Start checking for the end of the credits animation
         StartCoroutine(WaitAndReturnToMenu());
     }
 
@@ -72,22 +67,15 @@ public class GameManager : MonoBehaviour
         Animator anim = winPanel.GetComponentInChildren<Animator>();
         if (anim != null)
         {
-            // Wait for the end of the current frame so the animator can transition
             yield return null;
-
-            // Get the length of the "endcredits" animation clip
             float animationLength = anim.GetCurrentAnimatorStateInfo(0).length;
-
-            // ✅ Use Realtime because Time.timeScale is 0!
-            yield return new WaitForSecondsRealtime(animationLength + 1.0f); // Added 1s buffer
-
+            yield return new WaitForSecondsRealtime(animationLength + 1.0f);
             if (creditsActive) QuitToMainMenu();
         }
     }
 
     private void OnPausePerformed(InputAction.CallbackContext context)
     {
-        // ✅ If credits are playing, pressing Esc skips to Main Menu
         if (creditsActive)
         {
             QuitToMainMenu();
@@ -105,6 +93,7 @@ public class GameManager : MonoBehaviour
         if (pausePanel != null) pausePanel.SetActive(true);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+        if (controllerCursor != null) controllerCursor.SetCursorVisible(true); // ✅ fixed
     }
 
     public void Resume()
@@ -112,12 +101,11 @@ public class GameManager : MonoBehaviour
         isPaused = false;
         creditsActive = false;
         Time.timeScale = 1f;
-
         if (pausePanel != null) pausePanel.SetActive(false);
         if (winPanel != null) winPanel.SetActive(false);
-
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        if (controllerCursor != null) controllerCursor.SetCursorVisible(false); // ✅ fixed
         if (stateManager != null) stateManager.ChangeGameState(GameStates.InGame);
     }
 
@@ -130,7 +118,6 @@ public class GameManager : MonoBehaviour
     public void QuitToMainMenu()
     {
         Time.timeScale = 1f;
-        // ✅ Ensure the state is reset before leaving
         if (stateManager != null) stateManager.ChangeGameState(GameStates.InGame);
         SceneManager.LoadScene("MainMenu");
     }

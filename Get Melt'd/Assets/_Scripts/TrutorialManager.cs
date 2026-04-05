@@ -76,6 +76,11 @@ public class TutorialManager : MonoBehaviour
 
     private void ShowJumpPrompt()
     {
+        // Hide movement prompt immediately when jump prompt appears
+        SetActive(keyboardMovementPrompt, false);
+        SetActive(controllerMovementPrompt, false);
+        movementDone = true;
+
         SetActive(keyboardJumpPrompt, !usingController);
         SetActive(controllerJumpPrompt, usingController);
     }

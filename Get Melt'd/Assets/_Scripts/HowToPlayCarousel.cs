@@ -3,7 +3,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
 using UnityEngine.InputSystem;
-using TMPro;
 
 public class HowToPlayCarousel : MonoBehaviour
 {
@@ -12,13 +11,11 @@ public class HowToPlayCarousel : MonoBehaviour
     {
         public VideoClip videoClip;
 
-        [Header("Movement Caption")]
-        [TextArea] public string keyboardCaption;
-        [TextArea] public string controllerCaption;
-
-        [Header("Jump Caption")]
-        [TextArea] public string keyboardJumpCaption;
-        [TextArea] public string controllerJumpCaption;
+        [Header("Caption GameObjects")]
+        public GameObject keyboardCaptionObject;
+        public GameObject controllerCaptionObject;
+        public GameObject keyboardJumpCaptionObject;
+        public GameObject controllerJumpCaptionObject;
     }
 
     [Header("Slides")]
@@ -27,8 +24,6 @@ public class HowToPlayCarousel : MonoBehaviour
     [Header("UI References")]
     public VideoPlayer videoPlayer;
     public RawImage videoDisplay;
-    public TMP_Text captionText;        // ✅ One shared movement caption TMP object
-    public TMP_Text jumpCaptionText;    // ✅ One shared jump caption TMP object
     public Button prevButton;
     public Button nextButton;
 
@@ -125,33 +120,41 @@ public class HowToPlayCarousel : MonoBehaviour
         RefreshCaptions();
     }
 
+    void HideAllCaptionsForSlide(CarouselSlide slide)
+    {
+        if (slide.keyboardCaptionObject != null) slide.keyboardCaptionObject.SetActive(false);
+        if (slide.controllerCaptionObject != null) slide.controllerCaptionObject.SetActive(false);
+        if (slide.keyboardJumpCaptionObject != null) slide.keyboardJumpCaptionObject.SetActive(false);
+        if (slide.controllerJumpCaptionObject != null) slide.controllerJumpCaptionObject.SetActive(false);
+    }
+
     void RefreshCaptions()
     {
         if (_currentIndex < 0 || _currentIndex >= slides.Count) return;
 
         CarouselSlide slide = slides[_currentIndex];
 
-        // ✅ Update shared movement caption
-        if (captionText != null)
-            captionText.text = _isControllerActive
-                ? slide.controllerCaption
-                : slide.keyboardCaption;
+        HideAllCaptionsForSlide(slide);
 
-        // ✅ Update shared jump caption — hide if empty
-        if (jumpCaptionText != null)
+        if (_isControllerActive)
         {
-            string jumpText = _isControllerActive
-                ? slide.controllerJumpCaption
-                : slide.keyboardJumpCaption;
-
-            jumpCaptionText.text = jumpText;
-            jumpCaptionText.gameObject.SetActive(!string.IsNullOrEmpty(jumpText));
+            if (slide.controllerCaptionObject != null) slide.controllerCaptionObject.SetActive(true);
+            if (slide.controllerJumpCaptionObject != null) slide.controllerJumpCaptionObject.SetActive(true);
+        }
+        else
+        {
+            if (slide.keyboardCaptionObject != null) slide.keyboardCaptionObject.SetActive(true);
+            if (slide.keyboardJumpCaptionObject != null) slide.keyboardJumpCaptionObject.SetActive(true);
         }
     }
 
     void LoadSlide(int index)
     {
         if (index < 0 || index >= slides.Count) return;
+
+        // Hide all captions from previous slide before switching
+        if (_currentIndex >= 0 && _currentIndex < slides.Count)
+            HideAllCaptionsForSlide(slides[_currentIndex]);
 
         _currentIndex = index;
         RefreshCaptions();
