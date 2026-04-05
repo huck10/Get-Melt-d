@@ -2575,7 +2575,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1574.2284, y: -590.79504}
+  m_AnchoredPosition: {x: 1574.2284, y: -323.60498}
   m_SizeDelta: {x: 3148.4568, y: 167.19}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &644794281
@@ -2598,8 +2598,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\tkarl Christian B. Balaton\n\t<size=70%>Game programmer/ Game Designer
-    / 3d artist</color></size>"
+  m_text: "\tKarl Christian B. Balaton\n\t<size=70%>Project Lead/ Game Programmer/
+    Game Designer / 3d artist</color></size>"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ee43f5eac66d71f4ab8650b1a984e643, type: 2}
   m_sharedMaterial: {fileID: -7331237961000414526, guid: ee43f5eac66d71f4ab8650b1a984e643, type: 2}
@@ -2893,8 +2893,8 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 17390464}
-  - {fileID: 1260653983}
   - {fileID: 644794280}
+  - {fileID: 1260653983}
   - {fileID: 1270644304}
   - {fileID: 1558368446}
   - {fileID: 355402014}
@@ -10477,7 +10477,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1574.2284, y: -323.60498}
+  m_AnchoredPosition: {x: 1574.2284, y: -590.79504}
   m_SizeDelta: {x: 3148.4568, y: 167.19}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1260653984
@@ -10996,8 +10996,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1069467476}
   m_HandleRect: {fileID: 1069467475}
   m_Direction: 2
-  m_Value: 0.99999946
-  m_Size: 0.608505
+  m_Value: 1.0000006
+  m_Size: 0.60850495
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

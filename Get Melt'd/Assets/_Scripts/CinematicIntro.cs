@@ -33,6 +33,9 @@ public class CinematicIntro : MonoBehaviour
     [Header("Disable During Cinematic")]
     public MonoBehaviour[] cameraScriptsToDisable;
 
+    [Header("Tutorial")]
+    public TutorialManager tutorialManager;
+
     private Transform _originalParent;
     private Vector3 _originalLocalPosition;
     private Quaternion _originalLocalRotation;
@@ -47,16 +50,16 @@ public class CinematicIntro : MonoBehaviour
         if (environmentCenter == null) { Debug.LogError("❌ Environment Center not assigned!"); return; }
         if (goalTransform == null) { Debug.LogError("❌ Goal Transform not assigned!"); return; }
 
-        // ✅ Save original parent and local transform before detaching
+        // Save original parent and local transform before detaching
         _originalParent = mainCamera.transform.parent;
         _originalLocalPosition = mainCamera.transform.localPosition;
         _originalLocalRotation = mainCamera.transform.localRotation;
 
-        // ✅ Detach camera from player so it moves freely
+        // Detach camera from player so it moves freely
         mainCamera.transform.SetParent(null);
         Debug.Log("📷 Camera detached from: " + (_originalParent != null ? _originalParent.name : "none"));
 
-        // ✅ Disable any scripts fighting for camera control
+        // Disable any scripts fighting for camera control
         foreach (var script in cameraScriptsToDisable)
         {
             if (script != null)
@@ -84,9 +87,9 @@ public class CinematicIntro : MonoBehaviour
         yield return StartCoroutine(MoveAndLook(
             zoomOutPos, playerTransform.position, zoomOutDuration));
 
-        Debug.Log("🎬 Phase 2: Travel to kitchen center");
+        Debug.Log("🎬 Phase 2: Travel to environment center");
 
-        // ── PHASE 2: Travel to kitchen center ──────────────────────
+        // ── PHASE 2: Travel to environment center ──────────────────
         Vector3 kitchenPos = environmentCenter.position
                            + Vector3.up * environmentHeight
                            + Vector3.back * rotateRadius;
@@ -94,16 +97,15 @@ public class CinematicIntro : MonoBehaviour
         yield return StartCoroutine(MoveAndLook(
             kitchenPos, environmentCenter.position, travelToMiddleDuration));
 
-        Debug.Log("🎬 Phase 3: Rotate around kitchen");
+        Debug.Log("🎬 Phase 3: Rotate around environment");
 
-        // ── PHASE 3: Slow rotation around kitchen ──────────────────
+        // ── PHASE 3: Slow rotation around environment ───────────────
         yield return StartCoroutine(RotateAround(
             environmentCenter.position, rotateRadius, environmentHeight, rotateDuration));
 
         Debug.Log("🎬 Phase 4: Travel to goal");
 
         // ── PHASE 4: Travel to goal ─────────────────────────────────
-        // ✅ Uses goalTransform.forward so camera respects blue arrow direction
         Vector3 goalPos = goalTransform.position
                         - goalTransform.forward * goalViewDistance
                         + Vector3.up * 2f;
@@ -119,7 +121,6 @@ public class CinematicIntro : MonoBehaviour
         Debug.Log("🎬 Phase 6: Return to player");
 
         // ── PHASE 6: Return to player ───────────────────────────────
-        // ✅ Uses playerTransform.forward so camera respects player direction
         Vector3 returnPos = playerTransform.position
                           + Vector3.up * 2f
                           - playerTransform.forward * 3f;
@@ -127,7 +128,9 @@ public class CinematicIntro : MonoBehaviour
         yield return StartCoroutine(MoveAndLook(
             returnPos, playerTransform.position, returnToPlayerDuration));
 
-        // ── PHASE 7: Hold then start game ───────────────────────────
+        Debug.Log("🎬 Phase 7: Hold then start game");
+
+        // ── PHASE 7: Hold then hand control back ────────────────────
         yield return new WaitForSeconds(holdPlayerDuration);
 
         EndCinematic();
@@ -140,8 +143,8 @@ public class CinematicIntro : MonoBehaviour
 
         Vector3 dir = (lookTarget - targetPos).normalized;
         Quaternion endRot = dir != Vector3.zero
-            ? Quaternion.LookRotation(dir)
-            : startRot;
+                                 ? Quaternion.LookRotation(dir)
+                                 : startRot;
 
         float elapsed = 0f;
         while (elapsed < duration)
@@ -187,16 +190,22 @@ public class CinematicIntro : MonoBehaviour
     {
         Debug.Log("🎬 Cinematic complete — restoring camera to player!");
 
-        // ✅ Re-attach camera back to original parent (the player)
+        // Re-attach camera back to original parent (the player)
         mainCamera.transform.SetParent(_originalParent);
         mainCamera.transform.localPosition = _originalLocalPosition;
         mainCamera.transform.localRotation = _originalLocalRotation;
 
-        // ✅ Re-enable camera scripts
+        // Re-enable camera scripts
         foreach (var script in cameraScriptsToDisable)
             if (script != null) script.enabled = true;
 
         if (playerController != null) playerController.enabled = true;
         if (playerHUD != null) playerHUD.SetActive(true);
+
+        // Hand off to tutorial
+        if (tutorialManager != null)
+            tutorialManager.OnCinematicFinished();
+        else
+            Debug.LogWarning("⚠️ TutorialManager not assigned — tutorial won't trigger.");
     }
 }

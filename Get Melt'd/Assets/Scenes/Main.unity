@@ -11693,9 +11693,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\nProject Lead / 3d Artist / Programmer\t\n\t\t\n\nGame Programmer / UI
-    / Sound Designer\n\n\nGame Programmer / Level Designer / 3D and 2D Artist / Shader
-    Artist\t\n\n\nGame Programmer / UI / 3D Artist\t\n\n\nProgrammer\t\t\n\n"
+  m_text: "\nProject Lead / 3d Artist / Programmer / Game Designer\t\n\t\t\n\nGame
+    Programmer / UI / Sound Designer\n\n\nGame Programmer / Level Designer / 3D and
+    2D Artist / Shader Artist\t\n\n\nGame Programmer / UI / 3D Artist\t\n\n\nProgrammer\t\t\n\n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ee43f5eac66d71f4ab8650b1a984e643, type: 2}
   m_sharedMaterial: {fileID: -7331237961000414526, guid: ee43f5eac66d71f4ab8650b1a984e643, type: 2}
@@ -24793,9 +24793,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\nProject Lead / 3d Artist / Programmer\t\n\t\t\n\nGame Programmer / UI
-    / Sound Designer\n\n\nGame Programmer / Level Designer / 3D and 2D Artist / Shader
-    Artist\t\n\n\nGame Programmer / UI / 3D Artist\t\n\n\nProgrammer\t\t\n\n"
+  m_text: "\nProject Lead / 3d Artist / Programmer / Game Designer\t\t\n\t\t\n\nGame
+    Programmer / UI / Sound Designer\n\n\nGame Programmer / Level Designer / 3D and
+    2D Artist / Shader Artist\t\n\n\nGame Programmer / UI / 3D Artist\t\n\n\nProgrammer\t\t\n\n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ee43f5eac66d71f4ab8650b1a984e643, type: 2}
   m_sharedMaterial: {fileID: -7331237961000414526, guid: ee43f5eac66d71f4ab8650b1a984e643, type: 2}
@@ -54473,15 +54473,15 @@ PrefabInstance:
       objectReference: {fileID: 350974959}
     - target: {fileID: 5786764776916622101, guid: e14f0e774e34a9646804a351c3c78e3d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -115
+      value: -131.5
       objectReference: {fileID: 0}
     - target: {fileID: 5786764776916622101, guid: e14f0e774e34a9646804a351c3c78e3d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 11.5
+      value: 107
       objectReference: {fileID: 0}
     - target: {fileID: 5786764776916622101, guid: e14f0e774e34a9646804a351c3c78e3d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 210.894
+      value: 191.8
       objectReference: {fileID: 0}
     - target: {fileID: 5786764776916622101, guid: e14f0e774e34a9646804a351c3c78e3d, type: 3}
       propertyPath: m_LocalRotation.w
