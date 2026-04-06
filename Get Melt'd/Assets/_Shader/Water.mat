@@ -541,7 +541,7 @@ Material:
     - _BaseColor: {r: 0.38714844, g: 0.69352806, b: 0.9433962, a: 0.68235296}
     - _BaseColorMap_MipInfo: {r: 0, g: 0, b: 0, a: 0}
     - _BaseColorMaskColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 0.3871484, g: 0.69352806, b: 0.9433962, a: 0.68235296}
+    - _Color: {r: 0.38714844, g: 0.69352806, b: 0.9433962, a: 0.68235296}
     - _ColorShift: {r: 0, g: 0, b: 0, a: 1}
     - _DiffusionProfileAsset: {r: 0, g: 0, b: 0, a: 0}
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}

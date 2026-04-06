@@ -7,26 +7,19 @@ public class SwingingObject : MonoBehaviour
     public float speed = 5f;
     public float targetAngle = 20f;
 
-    private Rigidbody rb;
-
-    void Start()
+    void Update()
     {
-        rb = GetComponent<Rigidbody>();
-    }
-
-    void FixedUpdate()
-    {
-        float currentZ = transform.eulerAngles.z;
-        float diff = Mathf.DeltaAngle(currentZ, targetAngle);
+        float currentX = transform.eulerAngles.x;
+        float diff = Mathf.DeltaAngle(currentX, targetAngle);
 
         if (Mathf.Abs(diff) < 0.5f)
         {
             targetAngle *= -1f;
         }
 
-        Quaternion target = Quaternion.Euler(0f, 0f, targetAngle);
-        Quaternion newRot = Quaternion.Lerp(rb.rotation, target, Time.fixedDeltaTime * speed);
+        Quaternion target = Quaternion.Euler(targetAngle, 0f, 0f);
+        Quaternion newRot = Quaternion.Lerp(transform.rotation, target, Time.deltaTime * speed);
 
-        rb.MoveRotation(newRot);
+        transform.rotation = newRot;
     }
 }

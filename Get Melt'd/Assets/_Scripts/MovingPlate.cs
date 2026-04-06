@@ -8,36 +8,44 @@ public class MovingPlate : MonoBehaviour
 
     public float radius = 2f;
     public float speed = 10.0f;
-    private Rigidbody rb;
-    private Vector3 randomPoint;
 
-    private bool arrived = false;
+    private Vector3 randomPoint;
 
     private void Start()
     {
-        rb = GetComponent<Rigidbody>();
-        Vector2 random2D = Random.insideUnitCircle * radius;
-        randomPoint = new Vector3(random2D.x, 0f, random2D.y) + center.position;   
+        SetNewRandomPoint();
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
-        float distance = Vector3.Distance(rb.position, randomPoint);
+        float distance = Vector3.Distance(transform.position, randomPoint);
 
-        if(distance < 1)
+        if (distance < 0.1f)
         {
-            rb.velocity = Vector3.zero;
-            arrived = true;
+            SetNewRandomPoint();
         }
 
-        if (rb != null && !arrived)
-        {
-            rb.MovePosition(Vector3.MoveTowards(rb.position, randomPoint, speed * Time.fixedDeltaTime));
-        }
+        transform.position = Vector3.MoveTowards(
+            transform.position,
+            randomPoint,
+            speed * Time.deltaTime
+        );
+    }
+
+    void SetNewRandomPoint()
+    {
+        Vector2 random2D = Random.insideUnitCircle * radius;
+        randomPoint = new Vector3(
+            random2D.x + center.position.x,
+            transform.position.y, // keep current height
+            random2D.y + center.position.z
+        );
     }
 
     private void OnDrawGizmos()
     {
+        if (center == null) return;
+
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(center.position, radius);
     }

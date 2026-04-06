@@ -1,68 +1,123 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
     [Header("UI Panels")]
     public GameObject pausePanel;
+    public GameObject winPanel;
 
     [Header("References")]
-    public GameStateManager stateManager; // Drag your GameStateManager object here
+    public GameStateManager stateManager;
+    public ControllerCursor controllerCursor;
 
     private bool isPaused = false;
+    private InputAction pauseAction;
+    private bool creditsActive = false;
+
+    void Awake()
+    {
+        if (stateManager == null) stateManager = FindFirstObjectByType<GameStateManager>();
+        if (controllerCursor == null) controllerCursor = FindFirstObjectByType<ControllerCursor>();
+
+        pauseAction = new InputAction("Pause", binding: "<Gamepad>/start");
+        pauseAction.AddBinding("<Keyboard>/escape");
+        pauseAction.AddBinding("<Keyboard>/p");
+    }
+
+    void OnEnable()
+    {
+        pauseAction.Enable();
+        pauseAction.performed += OnPausePerformed;
+    }
+
+    void OnDisable()
+    {
+        pauseAction.performed -= OnPausePerformed;
+        pauseAction.Disable();
+    }
 
     void Start()
     {
-        // If stateManager is missing, try to find it in the scene
-        if (stateManager == null) stateManager = FindFirstObjectByType<GameStateManager>();
-
         Resume();
     }
 
-    void Update()
+    public void ShowWinPanel()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
+        isPaused = true;
+        creditsActive = true;
+
+        if (winPanel != null) winPanel.SetActive(true);
+        if (pausePanel != null) pausePanel.SetActive(false);
+
+        Time.timeScale = 0f;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        if (stateManager != null) stateManager.ChangeGameState(GameStates.PausedGame);
+        if (controllerCursor != null) controllerCursor.SetCursorVisible(true);
+
+        StartCoroutine(WaitAndReturnToMenu());
+    }
+
+    private IEnumerator WaitAndReturnToMenu()
+    {
+        Animator anim = winPanel.GetComponentInChildren<Animator>();
+        if (anim != null)
         {
-            if (isPaused) Resume();
-            else Pause();
+            yield return null;
+            float animationLength = anim.GetCurrentAnimatorStateInfo(0).length;
+            yield return new WaitForSecondsRealtime(animationLength + 1.0f);
+            if (creditsActive) QuitToMainMenu();
         }
+    }
+
+    private void OnPausePerformed(InputAction.CallbackContext context)
+    {
+        if (creditsActive)
+        {
+            QuitToMainMenu();
+            return;
+        }
+
+        if (isPaused) Resume();
+        else Pause();
     }
 
     public void Pause()
     {
         isPaused = true;
-
-        // Visuals
+        Time.timeScale = 0f;
         if (pausePanel != null) pausePanel.SetActive(true);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-
-        // Logic
-        if (stateManager != null) stateManager.ChangeGameState(GameStates.PausedGame);
+        if (controllerCursor != null) controllerCursor.SetCursorVisible(true); // ✅ fixed
     }
 
     public void Resume()
     {
         isPaused = false;
-
-        // Visuals
+        creditsActive = false;
+        Time.timeScale = 1f;
         if (pausePanel != null) pausePanel.SetActive(false);
+        if (winPanel != null) winPanel.SetActive(false);
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-
-        // Logic
+        if (controllerCursor != null) controllerCursor.SetCursorVisible(false); // ✅ fixed
         if (stateManager != null) stateManager.ChangeGameState(GameStates.InGame);
     }
 
     public void RestartGame()
     {
-        // Important: Reset state to InGame before loading
-        if (stateManager != null) stateManager.ChangeGameState(GameStates.InGame);
+        Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void QuitToMainMenu()
     {
+        Time.timeScale = 1f;
         if (stateManager != null) stateManager.ChangeGameState(GameStates.InGame);
         SceneManager.LoadScene("MainMenu");
     }

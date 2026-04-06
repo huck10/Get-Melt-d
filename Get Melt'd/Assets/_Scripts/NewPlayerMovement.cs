@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class NewPlayerMovement : MonoBehaviour
 {
@@ -13,6 +12,7 @@ public class NewPlayerMovement : MonoBehaviour
     public LayerMask slopeMask;
     public LayerMask skidMask;
     public Transform groundCheck;
+    // Use this variable instead of hardcoding 1.0f!
     public float groundDistance = 0.2f;
 
     [Header("Movement Settings")]
@@ -40,9 +40,11 @@ public class NewPlayerMovement : MonoBehaviour
 
     void Update()
     {
-        isGrounded = Physics.CheckSphere(groundCheck.position, 1.0f, groundMask);
+        // FIX: Replaced 1.0f with groundDistance
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+
         ShowWaterParticle();
-      
+
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
             body.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
@@ -58,11 +60,25 @@ public class NewPlayerMovement : MonoBehaviour
         }
     }
 
+    // --- VISUAL REPRESENTATION ---
+    private void OnDrawGizmos()
+    {
+        if (groundCheck != null)
+        {
+            // Change color based on whether grounded or not
+            Gizmos.color = isGrounded ? Color.green : Color.red;
+
+            // Draw the sphere in the Scene View
+            Gizmos.DrawWireSphere(groundCheck.position, groundDistance);
+        }
+    }
+
     void ShowWaterParticle()
     {
         if (wasAirborne && isGrounded)
         {
-            Instantiate(waterParticle, transform.position + Vector3.down * 0.5f, Quaternion.identity);
+            if (waterParticle != null)
+                Instantiate(waterParticle, transform.position + Vector3.down * 0.5f, Quaternion.identity);
         }
         wasAirborne = !isGrounded;
     }
@@ -109,7 +125,7 @@ public class NewPlayerMovement : MonoBehaviour
 
     void SpawnSkid()
     {
-        if (body.velocity.magnitude > 0.5f && isGrounded)
+        if (body.velocity.magnitude > 0.5f && isGrounded && transform.root.CompareTag("Player"))
         {
             if (Vector3.Distance(transform.position, lastSpawnPos) > spawnDistance)
             {
