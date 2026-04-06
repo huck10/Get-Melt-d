@@ -2417,7 +2417,7 @@
     "m_ObjectId": "8791abbcb78542848fa69471c1eea19f",
     "m_Title": "Water Color",
     "m_Position": {
-        "x": -1116.0001220703125,
+        "x": -1116.0,
         "y": -352.0
     }
 }
@@ -3907,7 +3907,7 @@
     "m_Title": "Water Refraction",
     "m_Position": {
         "x": -2327.0,
-        "y": -1226.9998779296875
+        "y": -1227.0
     }
 }
 
