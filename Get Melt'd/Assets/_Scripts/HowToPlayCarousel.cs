@@ -35,6 +35,11 @@ public class HowToPlayCarousel : MonoBehaviour
     {
         _isControllerActive = Gamepad.all.Count > 0;
         InputSystem.onDeviceChange += OnDeviceChange;
+
+        // ✅ Hide ALL captions across ALL slides immediately
+        // so nothing is visible before LoadSlide runs
+        foreach (var slide in slides)
+            HideAllCaptionsForSlide(slide);
     }
 
     void Start()
