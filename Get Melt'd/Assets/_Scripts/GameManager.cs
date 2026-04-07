@@ -93,7 +93,7 @@ public class GameManager : MonoBehaviour
         if (pausePanel != null) pausePanel.SetActive(true);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-        if (controllerCursor != null) controllerCursor.SetCursorVisible(true); // ✅ fixed
+        if (controllerCursor != null) controllerCursor.SetCursorVisible(true);
     }
 
     public void Resume()
@@ -105,19 +105,27 @@ public class GameManager : MonoBehaviour
         if (winPanel != null) winPanel.SetActive(false);
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        if (controllerCursor != null) controllerCursor.SetCursorVisible(false); // ✅ fixed
+        if (controllerCursor != null) controllerCursor.SetCursorVisible(false);
         if (stateManager != null) stateManager.ChangeGameState(GameStates.InGame);
     }
 
     public void RestartGame()
     {
         Time.timeScale = 1f;
+
+        // SET THE FLAG TO SKIP CINEMATIC ON RELOAD
+        CinematicIntro.skipOnRestart = true;
+
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void QuitToMainMenu()
     {
         Time.timeScale = 1f;
+
+        // RESET THE FLAG SO CINEMATIC PLAYS NEXT TIME THEY START A FRESH GAME
+        CinematicIntro.skipOnRestart = false;
+
         if (stateManager != null) stateManager.ChangeGameState(GameStates.InGame);
         SceneManager.LoadScene("MainMenu");
     }

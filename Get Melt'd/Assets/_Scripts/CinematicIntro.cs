@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class CinematicIntro : MonoBehaviour
 {
+    // Static variable persists across scene reloads
+    public static bool skipOnRestart = false;
+
     [Header("Camera Reference")]
     public Camera mainCamera;
 
@@ -30,6 +33,10 @@ public class CinematicIntro : MonoBehaviour
     public GameObject playerHUD;
     public MonoBehaviour playerController;
 
+    [Header("Skip Prompts (UI GameObjects)")]
+    public GameObject keyboardPromptObject;
+    public GameObject controllerPromptObject;
+
     [Header("Disable During Cinematic")]
     public MonoBehaviour[] cameraScriptsToDisable;
 
@@ -40,97 +47,108 @@ public class CinematicIntro : MonoBehaviour
     private Vector3 _originalLocalPosition;
     private Quaternion _originalLocalRotation;
 
+    private Coroutine _cinematicRoutine;
+    private bool _isSkipping = false;
+    private bool _isUsingController = false;
+
     void Start()
     {
-        if (mainCamera == null)
-            mainCamera = Camera.main;
+        if (mainCamera == null) mainCamera = Camera.main;
 
-        if (mainCamera == null) { Debug.LogError("❌ No camera found!"); return; }
-        if (playerTransform == null) { Debug.LogError("❌ Player Transform not assigned!"); return; }
-        if (environmentCenter == null) { Debug.LogError("❌ Environment Center not assigned!"); return; }
-        if (goalTransform == null) { Debug.LogError("❌ Goal Transform not assigned!"); return; }
-
-        // Save original parent and local transform before detaching
+        // 1. ALWAYS capture original positions first
         _originalParent = mainCamera.transform.parent;
         _originalLocalPosition = mainCamera.transform.localPosition;
         _originalLocalRotation = mainCamera.transform.localRotation;
 
-        // Detach camera from player so it moves freely
-        mainCamera.transform.SetParent(null);
-        Debug.Log("📷 Camera detached from: " + (_originalParent != null ? _originalParent.name : "none"));
-
-        // Disable any scripts fighting for camera control
-        foreach (var script in cameraScriptsToDisable)
+        // 2. CHECK FOR RESTART SKIP
+        if (skipOnRestart)
         {
-            if (script != null)
-            {
-                script.enabled = false;
-                Debug.Log("⛔ Disabled: " + script.GetType().Name);
-            }
+            Debug.Log("⏩ Restart detected: Skipping Cinematic Sequence.");
+            EndCinematic();
+            return;
         }
+
+        // 3. Normal Cinematic Setup
+        mainCamera.transform.SetParent(null);
+
+        foreach (var script in cameraScriptsToDisable)
+            if (script != null) script.enabled = false;
 
         if (playerController != null) playerController.enabled = false;
         if (playerHUD != null) playerHUD.SetActive(false);
 
-        StartCoroutine(PlayCinematic());
+        UpdateInputDevice();
+        UpdatePromptUI();
+
+        _cinematicRoutine = StartCoroutine(PlayCinematic());
+    }
+
+    void Update()
+    {
+        DetectDeviceChange();
+
+        if (!_isSkipping && (Input.anyKeyDown || Input.GetKeyDown(KeyCode.JoystickButton7)))
+        {
+            HandleSkip();
+        }
+    }
+
+    private void DetectDeviceChange()
+    {
+        bool controllerConnected = Input.GetJoystickNames().Length > 0 && !string.IsNullOrEmpty(Input.GetJoystickNames()[0]);
+        if (controllerConnected != _isUsingController)
+        {
+            _isUsingController = controllerConnected;
+            UpdatePromptUI();
+        }
+    }
+
+    private void UpdateInputDevice()
+    {
+        _isUsingController = Input.GetJoystickNames().Length > 0 && !string.IsNullOrEmpty(Input.GetJoystickNames()[0]);
+    }
+
+    private void UpdatePromptUI()
+    {
+        if (keyboardPromptObject != null) keyboardPromptObject.SetActive(!_isUsingController);
+        if (controllerPromptObject != null) controllerPromptObject.SetActive(_isUsingController);
+    }
+
+    private void HandleSkip()
+    {
+        _isSkipping = true;
+        if (keyboardPromptObject != null) keyboardPromptObject.SetActive(false);
+        if (controllerPromptObject != null) controllerPromptObject.SetActive(false);
+
+        if (_cinematicRoutine != null) StopCoroutine(_cinematicRoutine);
+        StopAllCoroutines();
+
+        EndCinematic();
     }
 
     IEnumerator PlayCinematic()
     {
-        Debug.Log("🎬 Phase 1: Zoom out from player");
+        // Phase 1: Zoom out
+        Vector3 zoomOutPos = playerTransform.position + Vector3.up * 3f - playerTransform.forward * zoomOutDistance;
+        yield return StartCoroutine(MoveAndLook(zoomOutPos, playerTransform.position, zoomOutDuration));
 
-        // ── PHASE 1: Zoom out from player ──────────────────────────
-        Vector3 zoomOutPos = playerTransform.position
-                           + Vector3.up * 3f
-                           - playerTransform.forward * zoomOutDistance;
+        // Phase 2: Center
+        Vector3 kitchenPos = environmentCenter.position + Vector3.up * environmentHeight + Vector3.back * rotateRadius;
+        yield return StartCoroutine(MoveAndLook(kitchenPos, environmentCenter.position, travelToMiddleDuration));
 
-        yield return StartCoroutine(MoveAndLook(
-            zoomOutPos, playerTransform.position, zoomOutDuration));
+        // Phase 3: Rotate
+        yield return StartCoroutine(RotateAround(environmentCenter.position, rotateRadius, environmentHeight, rotateDuration));
 
-        Debug.Log("🎬 Phase 2: Travel to environment center");
+        // Phase 4: Goal
+        Vector3 goalPos = goalTransform.position - goalTransform.forward * goalViewDistance + Vector3.up * 2f;
+        yield return StartCoroutine(MoveAndLook(goalPos, goalTransform.position, travelToGoalDuration));
 
-        // ── PHASE 2: Travel to environment center ──────────────────
-        Vector3 kitchenPos = environmentCenter.position
-                           + Vector3.up * environmentHeight
-                           + Vector3.back * rotateRadius;
-
-        yield return StartCoroutine(MoveAndLook(
-            kitchenPos, environmentCenter.position, travelToMiddleDuration));
-
-        Debug.Log("🎬 Phase 3: Rotate around environment");
-
-        // ── PHASE 3: Slow rotation around environment ───────────────
-        yield return StartCoroutine(RotateAround(
-            environmentCenter.position, rotateRadius, environmentHeight, rotateDuration));
-
-        Debug.Log("🎬 Phase 4: Travel to goal");
-
-        // ── PHASE 4: Travel to goal ─────────────────────────────────
-        Vector3 goalPos = goalTransform.position
-                        - goalTransform.forward * goalViewDistance
-                        + Vector3.up * 2f;
-
-        yield return StartCoroutine(MoveAndLook(
-            goalPos, goalTransform.position, travelToGoalDuration));
-
-        Debug.Log("🎬 Phase 5: Hold on goal");
-
-        // ── PHASE 5: Hold on goal ───────────────────────────────────
         yield return new WaitForSeconds(holdGoalDuration);
 
-        Debug.Log("🎬 Phase 6: Return to player");
+        // Phase 6: Return
+        Vector3 returnPos = playerTransform.position + Vector3.up * 2f - playerTransform.forward * 3f;
+        yield return StartCoroutine(MoveAndLook(returnPos, playerTransform.position, returnToPlayerDuration));
 
-        // ── PHASE 6: Return to player ───────────────────────────────
-        Vector3 returnPos = playerTransform.position
-                          + Vector3.up * 2f
-                          - playerTransform.forward * 3f;
-
-        yield return StartCoroutine(MoveAndLook(
-            returnPos, playerTransform.position, returnToPlayerDuration));
-
-        Debug.Log("🎬 Phase 7: Hold then start game");
-
-        // ── PHASE 7: Hold then hand control back ────────────────────
         yield return new WaitForSeconds(holdPlayerDuration);
 
         EndCinematic();
@@ -140,24 +158,18 @@ public class CinematicIntro : MonoBehaviour
     {
         Vector3 startPos = mainCamera.transform.position;
         Quaternion startRot = mainCamera.transform.rotation;
-
         Vector3 dir = (lookTarget - targetPos).normalized;
-        Quaternion endRot = dir != Vector3.zero
-                                 ? Quaternion.LookRotation(dir)
-                                 : startRot;
+        Quaternion endRot = dir != Vector3.zero ? Quaternion.LookRotation(dir) : startRot;
 
         float elapsed = 0f;
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
             float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / duration));
-
             mainCamera.transform.position = Vector3.Lerp(startPos, targetPos, t);
             mainCamera.transform.rotation = Quaternion.Slerp(startRot, endRot, t);
-
             yield return null;
         }
-
         mainCamera.transform.position = targetPos;
         mainCamera.transform.rotation = endRot;
     }
@@ -165,47 +177,35 @@ public class CinematicIntro : MonoBehaviour
     IEnumerator RotateAround(Vector3 center, float radius, float height, float duration)
     {
         float elapsed = 0f;
-        float startAngle = 180f;
-        float totalAngle = 180f;
-
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
             float t = Mathf.Clamp01(elapsed / duration);
-            float angle = startAngle + totalAngle * t;
+            float angle = 180f + 180f * t;
             float rad = angle * Mathf.Deg2Rad;
-
-            mainCamera.transform.position = center + new Vector3(
-                Mathf.Sin(rad) * radius,
-                height,
-                Mathf.Cos(rad) * radius
-            );
+            mainCamera.transform.position = center + new Vector3(Mathf.Sin(rad) * radius, height, Mathf.Cos(rad) * radius);
             mainCamera.transform.LookAt(center);
-
             yield return null;
         }
     }
 
     void EndCinematic()
     {
-        Debug.Log("🎬 Cinematic complete — restoring camera to player!");
+        if (keyboardPromptObject != null) keyboardPromptObject.SetActive(false);
+        if (controllerPromptObject != null) controllerPromptObject.SetActive(false);
 
-        // Re-attach camera back to original parent (the player)
         mainCamera.transform.SetParent(_originalParent);
         mainCamera.transform.localPosition = _originalLocalPosition;
         mainCamera.transform.localRotation = _originalLocalRotation;
 
-        // Re-enable camera scripts
         foreach (var script in cameraScriptsToDisable)
             if (script != null) script.enabled = true;
 
         if (playerController != null) playerController.enabled = true;
         if (playerHUD != null) playerHUD.SetActive(true);
 
-        // Hand off to tutorial
-        if (tutorialManager != null)
-            tutorialManager.OnCinematicFinished();
-        else
-            Debug.LogWarning("⚠️ TutorialManager not assigned — tutorial won't trigger.");
+        if (tutorialManager != null) tutorialManager.OnCinematicFinished();
+
+        this.enabled = false;
     }
 }
